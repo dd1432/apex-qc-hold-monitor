@@ -1,6 +1,6 @@
 /* =========================================================
    APEX QC HOLD ROLL MONITOR
-   MODERN INDUSTRIAL DASHBOARD UI
+   MODERN INDUSTRIAL DASHBOARD
 ========================================================= */
 
 :root {
@@ -38,10 +38,16 @@
     --radius-md: 10px;
     --radius-lg: 14px;
 
-    --shadow-sm: 0 1px 3px rgba(15, 23, 42, 0.08);
-    --shadow-md: 0 8px 25px rgba(15, 23, 42, 0.10);
-    --shadow-lg: 0 20px 50px rgba(15, 23, 42, 0.18);
+    --shadow-sm:
+        0 1px 3px rgba(15, 23, 42, 0.08);
+
+    --shadow-md:
+        0 8px 25px rgba(15, 23, 42, 0.10);
+
+    --shadow-lg:
+        0 20px 50px rgba(15, 23, 42, 0.20);
 }
+
 
 /* =========================================================
    RESET
@@ -57,7 +63,9 @@ html {
 
 body {
     margin: 0;
+
     min-height: 100vh;
+
     font-family:
         Inter,
         "Segoe UI",
@@ -66,6 +74,7 @@ body {
         sans-serif;
 
     background: #f1f5f9;
+
     color: var(--gray-800);
 
     -webkit-font-smoothing: antialiased;
@@ -86,54 +95,75 @@ img {
     max-width: 100%;
 }
 
+
 /* =========================================================
-   APP HEADER
+   HEADER
 ========================================================= */
 
 header {
-    background: linear-gradient(
-        135deg,
-        var(--navy-dark),
-        var(--navy)
-    );
+    background:
+        linear-gradient(
+            135deg,
+            var(--navy-dark),
+            var(--navy)
+        );
 
     color: white;
+
     padding: 18px 28px;
 
     display: flex;
+
     align-items: center;
     justify-content: space-between;
 
     position: sticky;
+
     top: 0;
+
     z-index: 100;
 }
 
 header h1 {
     margin: 0;
+
     font-size: 21px;
+
     font-weight: 700;
+
     letter-spacing: 0.3px;
 }
 
 header p {
     margin: 4px 0 0;
+
     color: #cbd5e1;
+
     font-size: 12px;
 }
 
+
+/* =========================================================
+   ADD HOLD BUTTON
+========================================================= */
+
 #addHoldBtn {
     border: 0;
+
     background: white;
+
     color: var(--navy);
 
     padding: 11px 17px;
+
     border-radius: 8px;
 
     font-weight: 700;
+
     font-size: 13px;
 
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.18);
+    box-shadow:
+        0 4px 12px rgba(0, 0, 0, 0.18);
 
     transition:
         transform 0.15s ease,
@@ -142,12 +172,15 @@ header p {
 
 #addHoldBtn:hover {
     transform: translateY(-1px);
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.22);
+
+    box-shadow:
+        0 6px 16px rgba(0, 0, 0, 0.22);
 }
 
 #addHoldBtn:active {
     transform: translateY(0);
 }
+
 
 /* =========================================================
    MAIN
@@ -155,14 +188,17 @@ header p {
 
 main {
     width: 100%;
+
     max-width: 1500px;
+
     margin: 0 auto;
 
     padding: 22px 28px 40px;
 }
 
+
 /* =========================================================
-   SUMMARY CARDS
+   SUMMARY
 ========================================================= */
 
 .summary-grid {
@@ -179,7 +215,9 @@ main {
 .summary-card {
     background: white;
 
-    border: 1px solid var(--gray-200);
+    border:
+        1px solid var(--gray-200);
+
     border-radius: var(--radius-md);
 
     padding: 16px 17px;
@@ -193,19 +231,24 @@ main {
     margin: 0 0 8px;
 
     color: var(--gray-500);
+
     font-size: 11px;
+
     font-weight: 700;
 
     text-transform: uppercase;
+
     letter-spacing: 0.6px;
 }
 
 .summary-card .value {
     font-size: 26px;
+
     font-weight: 750;
 
     color: var(--gray-900);
 }
+
 
 /* =========================================================
    TABS
@@ -213,25 +256,31 @@ main {
 
 .tabs {
     display: flex;
+
     gap: 3px;
 
     background: var(--gray-200);
 
     padding: 4px;
+
     border-radius: 9px;
 
     width: fit-content;
+
     margin-bottom: 14px;
 }
 
 .tabs button {
     border: 0;
+
     background: transparent;
 
     padding: 9px 18px;
 
     color: var(--gray-600);
+
     font-size: 13px;
+
     font-weight: 650;
 
     border-radius: 7px;
@@ -239,13 +288,15 @@ main {
 
 .tabs button.active {
     background: white;
+
     color: var(--navy);
 
     box-shadow: var(--shadow-sm);
 }
 
+
 /* =========================================================
-   FILTER TOOLBAR
+   FILTERS
 ========================================================= */
 
 .filters {
@@ -266,12 +317,15 @@ main {
 
     background: white;
 
-    border: 1px solid var(--gray-300);
+    border:
+        1px solid var(--gray-300);
+
     border-radius: 8px;
 
     padding: 10px 12px;
 
     color: var(--gray-800);
+
     font-size: 13px;
 
     outline: none;
@@ -290,16 +344,20 @@ main {
         rgba(37, 99, 235, 0.10);
 }
 
+
 /* =========================================================
-   HOLD LIST
+   LISTS
 ========================================================= */
 
 #holdList,
 #historyList {
     display: flex;
+
     flex-direction: column;
+
     gap: 11px;
 }
+
 
 /* =========================================================
    HOLD CARD
@@ -310,10 +368,16 @@ main {
 
     background: white;
 
-    border: 1px solid var(--gray-200);
+    border:
+        1px solid var(--gray-200);
+
     border-radius: var(--radius-md);
 
-    padding: 17px 18px 17px 22px;
+    padding:
+        17px
+        18px
+        17px
+        22px;
 
     box-shadow: var(--shadow-sm);
 
@@ -326,10 +390,14 @@ main {
 
 .hold-card:hover {
     transform: translateY(-1px);
+
     box-shadow: var(--shadow-md);
 }
 
-/* left status strip */
+
+/* =========================================================
+   HOLD CARD STATUS STRIP
+========================================================= */
 
 .hold-card::before {
     content: "";
@@ -337,7 +405,9 @@ main {
     position: absolute;
 
     left: 0;
+
     top: 0;
+
     bottom: 0;
 
     width: 4px;
@@ -357,13 +427,16 @@ main {
     background: var(--blue);
 }
 
+
 /* =========================================================
-   CARD TOP
+   CARD HEADER
 ========================================================= */
 
 .hold-card-header {
     display: flex;
+
     align-items: flex-start;
+
     justify-content: space-between;
 
     gap: 15px;
@@ -381,6 +454,7 @@ main {
     color: var(--gray-900);
 
     font-size: 16px;
+
     font-weight: 750;
 }
 
@@ -392,12 +466,14 @@ main {
     font-size: 12px;
 }
 
+
 /* =========================================================
    BADGES
 ========================================================= */
 
 .badge {
     display: inline-flex;
+
     align-items: center;
 
     white-space: nowrap;
@@ -407,6 +483,7 @@ main {
     border-radius: 999px;
 
     font-size: 10px;
+
     font-weight: 750;
 
     letter-spacing: 0.3px;
@@ -414,31 +491,37 @@ main {
 
 .badge-hold {
     background: var(--orange-light);
+
     color: var(--orange);
 }
 
 .badge-inspection {
     background: var(--blue-light);
+
     color: var(--blue);
 }
 
 .badge-review {
     background: var(--purple-light);
+
     color: var(--purple);
 }
 
 .badge-released {
     background: var(--green-light);
+
     color: var(--green);
 }
 
 .badge-rejected {
     background: var(--red-light);
+
     color: var(--red);
 }
 
+
 /* =========================================================
-   CARD DETAILS GRID
+   CARD DETAILS
 ========================================================= */
 
 .hold-details {
@@ -451,7 +534,8 @@ main {
 
     padding-top: 12px;
 
-    border-top: 1px solid var(--gray-100);
+    border-top:
+        1px solid var(--gray-100);
 }
 
 .detail-item label {
@@ -460,9 +544,11 @@ main {
     color: var(--gray-400);
 
     font-size: 10px;
+
     font-weight: 700;
 
     text-transform: uppercase;
+
     letter-spacing: 0.45px;
 
     margin-bottom: 3px;
@@ -474,10 +560,12 @@ main {
     color: var(--gray-700);
 
     font-size: 12px;
+
     font-weight: 600;
 
     overflow-wrap: anywhere;
 }
+
 
 /* =========================================================
    CARD FOOTER
@@ -487,6 +575,7 @@ main {
     display: flex;
 
     justify-content: space-between;
+
     align-items: center;
 
     gap: 12px;
@@ -498,11 +587,14 @@ main {
     color: var(--orange);
 
     font-size: 12px;
+
     font-weight: 700;
 }
 
 .view-details-btn {
-    border: 1px solid var(--gray-300);
+    border:
+        1px solid var(--gray-300);
+
     background: white;
 
     color: var(--navy);
@@ -512,6 +604,7 @@ main {
     border-radius: 7px;
 
     font-size: 12px;
+
     font-weight: 700;
 }
 
@@ -519,8 +612,9 @@ main {
     background: var(--gray-50);
 }
 
+
 /* =========================================================
-   MODAL BASE
+   MODAL OVERLAY
 ========================================================= */
 
 .modal {
@@ -533,26 +627,36 @@ main {
     display: flex;
 
     align-items: center;
+
     justify-content: center;
 
-    padding: 24px;
+    padding: 20px;
 
     background:
-        rgba(7, 18, 35, 0.64);
+        rgba(7, 18, 35, 0.62);
 
     backdrop-filter: blur(3px);
+
+    /*
+       Important:
+       Allow the modal to receive normal touch/click events.
+    */
+
+    touch-action: auto;
 
     overscroll-behavior: contain;
 }
 
+
 /* =========================================================
-   MODAL BOX
+   MODAL CONTENT
 ========================================================= */
 
 .modal-content {
     width: min(850px, 100%);
 
-    max-height: calc(100vh - 48px);
+    max-height:
+        calc(100vh - 40px);
 
     background: white;
 
@@ -561,42 +665,55 @@ main {
     box-shadow: var(--shadow-lg);
 
     display: flex;
+
     flex-direction: column;
 
     overflow: hidden;
 
     overscroll-behavior: contain;
 
-    animation: modalIn 0.16s ease-out;
+    animation:
+        modalIn
+        0.16s
+        ease-out;
 }
 
 @keyframes modalIn {
+
     from {
         opacity: 0;
-        transform: translateY(8px) scale(0.99);
+
+        transform:
+            translateY(10px)
+            scale(0.99);
     }
 
     to {
         opacity: 1;
-        transform: translateY(0) scale(1);
+
+        transform:
+            translateY(0)
+            scale(1);
     }
 }
+
 
 /* =========================================================
    MODAL HEADER
 ========================================================= */
 
 .modal-header {
-    flex: 0 0 auto;
+    flex-shrink: 0;
 
     display: flex;
 
     align-items: center;
+
     justify-content: space-between;
 
-    gap: 15px;
+    gap: 12px;
 
-    padding: 16px 20px;
+    padding: 15px 18px;
 
     background: var(--navy);
 
@@ -607,6 +724,7 @@ main {
     margin: 0;
 
     font-size: 17px;
+
     font-weight: 750;
 }
 
@@ -618,31 +736,61 @@ main {
     font-size: 11px;
 }
 
-.close-modal {
-    flex: 0 0 auto;
 
-    width: 34px;
-    height: 34px;
+/* =========================================================
+   CLOSE BUTTON
+========================================================= */
+
+.close-modal {
+    flex-shrink: 0;
+
+    width: 36px;
+
+    height: 36px;
 
     border: 0;
 
     border-radius: 7px;
 
-    background: rgba(255, 255, 255, 0.10);
+    background:
+        rgba(255, 255, 255, 0.12);
 
     color: white;
 
-    font-size: 21px;
+    font-size: 22px;
+
     line-height: 1;
 
     display: flex;
+
     align-items: center;
+
     justify-content: center;
+
+    cursor: pointer;
+
+    /*
+       Make sure mobile browsers treat it as a button.
+    */
+
+    pointer-events: auto;
+
+    touch-action: manipulation;
+
+    position: relative;
+
+    z-index: 20;
 }
 
 .close-modal:hover {
-    background: rgba(255, 255, 255, 0.18);
+    background:
+        rgba(255, 255, 255, 0.22);
 }
+
+.close-modal:active {
+    transform: scale(0.94);
+}
+
 
 /* =========================================================
    MODAL BODY
@@ -654,25 +802,39 @@ main {
     min-height: 0;
 
     overflow-y: auto;
+
     overflow-x: hidden;
 
     padding: 20px;
 
+    /*
+       Only the modal body scrolls.
+    */
+
     overscroll-behavior: contain;
 
     -webkit-overflow-scrolling: touch;
+
+    touch-action: pan-y;
 }
 
-/*
-   IMPORTANT:
-   The modal body gets the scrolling.
-   The page behind it must not scroll.
-*/
+
+/* =========================================================
+   PREVENT BODY SCROLL
+========================================================= */
 
 body.modal-open {
     overflow: hidden !important;
+
     height: 100vh;
+
+    /*
+       Prevents the dashboard behind the modal
+       from moving on mobile.
+    */
+    overscroll-behavior: none;
 }
+
 
 /* =========================================================
    DETAILS TOP INFORMATION
@@ -693,7 +855,8 @@ body.modal-open {
 .details-top-item {
     background: var(--gray-50);
 
-    border: 1px solid var(--gray-200);
+    border:
+        1px solid var(--gray-200);
 
     border-radius: 9px;
 
@@ -706,9 +869,11 @@ body.modal-open {
     color: var(--gray-400);
 
     font-size: 9px;
+
     font-weight: 750;
 
     text-transform: uppercase;
+
     letter-spacing: 0.5px;
 
     margin-bottom: 5px;
@@ -718,20 +883,24 @@ body.modal-open {
     color: var(--gray-900);
 
     font-size: 14px;
+
+    overflow-wrap: anywhere;
 }
 
+
 /* =========================================================
-   DETAILS SECTIONS
+   DETAILS SECTION
 ========================================================= */
 
 .details-section {
-    margin-top: 18px;
+    margin-top: 16px;
 
     padding: 16px;
 
     background: white;
 
-    border: 1px solid var(--gray-200);
+    border:
+        1px solid var(--gray-200);
 
     border-radius: 10px;
 }
@@ -743,46 +912,54 @@ body.modal-open {
 .details-section h3 {
     margin: 0 0 13px;
 
+    padding-bottom: 9px;
+
+    border-bottom:
+        1px solid var(--gray-200);
+
     color: var(--gray-900);
 
     font-size: 13px;
+
     font-weight: 750;
-
-    padding-bottom: 9px;
-
-    border-bottom: 1px solid var(--gray-200);
 }
 
+
 /* =========================================================
-   ACTION REQUIRED SECTION
+   ACTION REQUIRED PANEL
 ========================================================= */
 
 .action-panel {
-    background: #f8fafc;
-
-    border: 1px solid var(--gray-200);
-
-    border-radius: 10px;
+    margin-top: 16px;
 
     padding: 16px;
 
-    margin-top: 18px;
+    background: #f8fafc;
+
+    border:
+        1px solid #dbe3ed;
+
+    border-radius: 10px;
 }
 
 .action-panel h3 {
-    margin: 0 0 4px;
+    margin: 0 0 5px;
+
+    color: var(--gray-900);
 
     font-size: 14px;
-    color: var(--gray-900);
+
+    font-weight: 750;
 }
 
 .action-panel .action-subtitle {
+    margin-bottom: 15px;
+
     color: var(--gray-500);
 
     font-size: 11px;
-
-    margin-bottom: 15px;
 }
+
 
 /* =========================================================
    FORM GRID
@@ -813,6 +990,7 @@ body.modal-open {
     color: var(--gray-700);
 
     font-size: 11px;
+
     font-weight: 700;
 }
 
@@ -821,7 +999,8 @@ body.modal-open {
 .form-group textarea {
     width: 100%;
 
-    border: 1px solid var(--gray-300);
+    border:
+        1px solid var(--gray-300);
 
     background: white;
 
@@ -838,6 +1017,7 @@ body.modal-open {
 
 .form-group textarea {
     min-height: 85px;
+
     resize: vertical;
 }
 
@@ -850,6 +1030,7 @@ body.modal-open {
         0 0 0 3px
         rgba(37, 99, 235, 0.09);
 }
+
 
 /* =========================================================
    ACTION BUTTONS
@@ -873,11 +1054,17 @@ body.modal-open {
     padding: 10px 15px;
 
     font-size: 12px;
+
     font-weight: 750;
+
+    cursor: pointer;
+
+    touch-action: manipulation;
 }
 
 .btn-primary {
     background: var(--blue);
+
     color: white;
 }
 
@@ -887,6 +1074,7 @@ body.modal-open {
 
 .btn-success {
     background: var(--green);
+
     color: white;
 }
 
@@ -896,6 +1084,7 @@ body.modal-open {
 
 .btn-danger {
     background: var(--red);
+
     color: white;
 }
 
@@ -908,8 +1097,10 @@ body.modal-open {
 
     color: var(--gray-700);
 
-    border: 1px solid var(--gray-300) !important;
+    border:
+        1px solid var(--gray-300) !important;
 }
+
 
 /* =========================================================
    TIMELINE
@@ -929,7 +1120,9 @@ body.modal-open {
     position: absolute;
 
     left: 6px;
+
     top: 5px;
+
     bottom: 5px;
 
     width: 1px;
@@ -953,16 +1146,19 @@ body.modal-open {
     position: absolute;
 
     left: -21px;
+
     top: 4px;
 
     width: 9px;
+
     height: 9px;
 
     border-radius: 50%;
 
     background: var(--blue);
 
-    border: 2px solid white;
+    border:
+        2px solid white;
 
     box-shadow:
         0 0 0 1px var(--gray-300);
@@ -996,26 +1192,30 @@ body.modal-open {
     font-size: 10px;
 }
 
+
 /* =========================================================
-   PHOTO
+   LABEL PHOTO
 ========================================================= */
 
 .label-photo {
     display: block;
 
     width: 100%;
+
     max-height: 400px;
 
     object-fit: contain;
 
     background: var(--gray-100);
 
-    border: 1px solid var(--gray-200);
+    border:
+        1px solid var(--gray-200);
 
     border-radius: 9px;
 
     padding: 6px;
 }
+
 
 /* =========================================================
    ADD HOLD FORM
@@ -1023,7 +1223,9 @@ body.modal-open {
 
 #holdForm {
     display: flex;
+
     flex-direction: column;
+
     gap: 13px;
 }
 
@@ -1036,14 +1238,17 @@ body.modal-open {
     gap: 12px;
 }
 
+
 /* =========================================================
    FILE INPUT
 ========================================================= */
 
 input[type="file"] {
     padding: 8px;
+
     background: white;
 }
+
 
 /* =========================================================
    EMPTY STATE
@@ -1052,7 +1257,8 @@ input[type="file"] {
 .empty-state {
     background: white;
 
-    border: 1px dashed var(--gray-300);
+    border:
+        1px dashed var(--gray-300);
 
     border-radius: 12px;
 
@@ -1065,8 +1271,9 @@ input[type="file"] {
     font-size: 13px;
 }
 
+
 /* =========================================================
-   SCROLLBAR
+   MODAL SCROLLBAR
 ========================================================= */
 
 .modal-body::-webkit-scrollbar {
@@ -1087,8 +1294,9 @@ input[type="file"] {
     background: var(--gray-400);
 }
 
+
 /* =========================================================
-   MOBILE
+   TABLET
 ========================================================= */
 
 @media (max-width: 900px) {
@@ -1121,8 +1329,9 @@ input[type="file"] {
     }
 }
 
+
 /* =========================================================
-   PHONE
+   MOBILE
 ========================================================= */
 
 @media (max-width: 600px) {
@@ -1130,6 +1339,11 @@ input[type="file"] {
     body {
         font-size: 14px;
     }
+
+
+    /* -----------------------------------------------------
+       HEADER
+    ----------------------------------------------------- */
 
     header {
         position: relative;
@@ -1147,14 +1361,23 @@ input[type="file"] {
 
     #addHoldBtn {
         padding: 9px 11px;
+
         font-size: 11px;
     }
+
+
+    /* -----------------------------------------------------
+       MAIN
+    ----------------------------------------------------- */
 
     main {
         padding: 12px 11px 25px;
     }
 
-    /* Summary */
+
+    /* -----------------------------------------------------
+       SUMMARY
+    ----------------------------------------------------- */
 
     .summary-grid {
         grid-template-columns:
@@ -1177,7 +1400,10 @@ input[type="file"] {
         font-size: 21px;
     }
 
-    /* Tabs */
+
+    /* -----------------------------------------------------
+       TABS
+    ----------------------------------------------------- */
 
     .tabs {
         width: 100%;
@@ -1191,7 +1417,10 @@ input[type="file"] {
         font-size: 11px;
     }
 
-    /* Filters */
+
+    /* -----------------------------------------------------
+       FILTERS
+    ----------------------------------------------------- */
 
     .filters {
         grid-template-columns: 1fr;
@@ -1199,10 +1428,17 @@ input[type="file"] {
         gap: 7px;
     }
 
-    /* Hold card */
+
+    /* -----------------------------------------------------
+       HOLD CARD
+    ----------------------------------------------------- */
 
     .hold-card {
-        padding: 14px 13px 14px 17px;
+        padding:
+            14px
+            13px
+            14px
+            17px;
     }
 
     .hold-card-header {
@@ -1228,43 +1464,64 @@ input[type="file"] {
 
     .view-details-btn {
         width: 100%;
+
+        min-height: 40px;
     }
 
+
     /* =====================================================
-       MOBILE MODAL
+       MOBILE DETAILS MODAL
     ===================================================== */
 
     .modal {
-        padding: 0;
+        /*
+           Keep a small gap around the modal.
+           It looks cleaner than a completely full-screen box.
+        */
 
-        align-items: stretch;
-        justify-content: stretch;
+        padding: 8px;
 
-        background:
-            rgba(7, 18, 35, 0.72);
+        align-items: center;
 
-        /* Prevent swipe-through */
-        overscroll-behavior: none;
-        touch-action: none;
+        justify-content: center;
+
+        /*
+           IMPORTANT:
+           Do NOT use touch-action:none here.
+           It was causing touch/button problems.
+        */
+
+        touch-action: auto;
+
+        overscroll-behavior: contain;
     }
+
 
     .modal-content {
         width: 100%;
-        height: 100dvh;
 
-        max-height: none;
+        height:
+            calc(100dvh - 16px);
 
-        border-radius: 0;
+        max-height:
+            calc(100dvh - 16px);
 
-        box-shadow: none;
+        border-radius: 12px;
 
-        overscroll-behavior: none;
+        overflow: hidden;
     }
 
-    .modal-header {
-        padding: 13px 14px;
 
-        min-height: 59px;
+    /* -----------------------------------------------------
+       MODAL HEADER
+    ----------------------------------------------------- */
+
+    .modal-header {
+        flex-shrink: 0;
+
+        padding: 12px 13px;
+
+        min-height: 58px;
     }
 
     .modal-header h2 {
@@ -1275,23 +1532,68 @@ input[type="file"] {
         font-size: 10px;
     }
 
+
+    /* -----------------------------------------------------
+       CLOSE BUTTON
+    ----------------------------------------------------- */
+
     .close-modal {
-        width: 35px;
-        height: 35px;
+        width: 38px;
+
+        height: 38px;
+
+        min-width: 38px;
+
+        min-height: 38px;
+
+        font-size: 22px;
+
+        /*
+           Very important for mobile.
+        */
+
+        pointer-events: auto;
+
+        touch-action: manipulation;
+
+        z-index: 50;
     }
 
+
+    /* -----------------------------------------------------
+       MODAL BODY
+    ----------------------------------------------------- */
+
     .modal-body {
-        padding: 14px 12px 28px;
+        flex: 1;
+
+        min-height: 0;
+
+        padding:
+            14px
+            12px
+            28px;
 
         overflow-y: auto;
+
         overflow-x: hidden;
+
+        /*
+           Vertical scrolling belongs ONLY
+           to this area.
+        */
+
+        touch-action: pan-y;
 
         overscroll-behavior: contain;
 
-        touch-action: pan-y;
+        -webkit-overflow-scrolling: touch;
     }
 
-    /* Details top */
+
+    /* -----------------------------------------------------
+       DETAILS TOP
+    ----------------------------------------------------- */
 
     .details-top {
         grid-template-columns:
@@ -1314,7 +1616,10 @@ input[type="file"] {
         font-size: 12px;
     }
 
-    /* Sections */
+
+    /* -----------------------------------------------------
+       DETAILS SECTIONS
+    ----------------------------------------------------- */
 
     .details-section,
     .action-panel {
@@ -1330,7 +1635,10 @@ input[type="file"] {
         font-size: 13px;
     }
 
-    /* Forms */
+
+    /* -----------------------------------------------------
+       FORMS
+    ----------------------------------------------------- */
 
     .form-grid,
     #holdForm .form-row {
@@ -1351,7 +1659,10 @@ input[type="file"] {
         padding: 11px;
     }
 
-    /* Buttons */
+
+    /* -----------------------------------------------------
+       ACTION BUTTONS
+    ----------------------------------------------------- */
 
     .action-buttons {
         flex-direction: column;
@@ -1362,38 +1673,60 @@ input[type="file"] {
     .action-buttons button {
         width: 100%;
 
-        min-height: 44px;
+        min-height: 45px;
 
         font-size: 12px;
     }
 
-    /* Photo */
+
+    /* -----------------------------------------------------
+       PHOTO
+    ----------------------------------------------------- */
 
     .label-photo {
-        max-height: 320px;
+        max-height: 300px;
     }
 }
 
+
 /* =========================================================
-   VERY SMALL PHONES
+   SMALL PHONES
 ========================================================= */
 
 @media (max-width: 380px) {
 
     .summary-grid {
-        grid-template-columns: 1fr 1fr;
+        grid-template-columns:
+            1fr 1fr;
     }
 
     .details-top {
-        grid-template-columns: 1fr 1fr;
+        grid-template-columns:
+            1fr 1fr;
     }
 
     .hold-details {
-        grid-template-columns: 1fr 1fr;
+        grid-template-columns:
+            1fr 1fr;
+    }
+
+    .modal {
+        padding: 5px;
+    }
+
+    .modal-content {
+        height:
+            calc(100dvh - 10px);
+
+        max-height:
+            calc(100dvh - 10px);
+
+        border-radius: 10px;
     }
 
     .modal-body {
         padding-left: 10px;
+
         padding-right: 10px;
     }
 }
