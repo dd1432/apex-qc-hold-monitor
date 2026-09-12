@@ -27,14 +27,13 @@ import {
 ========================================================= */
 
 const firebaseConfig = {
-    apiKey: "YOUR_FIREBASE_API_KEY",
-    authDomain: "apex-qc-hold-monitor.firebaseapp.com",
-    databaseURL:
-        "https://apex-qc-hold-monitor-default-rtdb.asia-southeast1.firebasedatabase.app/",
-    projectId: "apex-qc-hold-monitor",
-    storageBucket: "apex-qc-hold-monitor.firebasestorage.app",
-    messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-    appId: "YOUR_FIREBASE_APP_ID"
+  apiKey: "AIzaSyBZC1ln8lQxkq_JJBHpMtF8zy850T3rHcg",
+  authDomain: "apex-qc-hold-monitor.firebaseapp.com",
+  databaseURL: "https://apex-qc-hold-monitor-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "apex-qc-hold-monitor",
+  storageBucket: "apex-qc-hold-monitor.firebasestorage.app",
+  messagingSenderId: "1006270751442",
+  appId: "1:1006270751442:web:dca6ce7f3b3a235ee9030b"
 };
 
 
