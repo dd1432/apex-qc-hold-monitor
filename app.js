@@ -46,10 +46,7 @@ const db = getDatabase(app);
 const CLOUDINARY_CLOUD_NAME = "org593vv";
 const CLOUDINARY_UPLOAD_PRESET = "apex_qc_hold";
 
-const CLOUDINARY_UPLOAD_URL =
-    `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`;
-
-
+const CLOUDINARY_UPLOAD_URL = "https://api.cloudinary.com/v1_1/org593vv/image/upload";
 /* =====================================================
    GLOBAL VARIABLES
 ===================================================== */
