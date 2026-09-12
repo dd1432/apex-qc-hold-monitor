@@ -1,9 +1,16 @@
-/* =====================================================
+/* =========================================================
    APEX QC HOLD ROLL MONITOR
-   Complete Application JavaScript
-===================================================== */
+   COMPLETE APPLICATION JAVASCRIPT
+========================================================= */
 
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
+
+/* =========================================================
+   FIREBASE
+========================================================= */
+
+import {
+    initializeApp
+} from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
 
 import {
     getDatabase,
@@ -15,38 +22,48 @@ import {
 } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-database.js";
 
 
-/* =====================================================
+/* =========================================================
    FIREBASE CONFIG
-===================================================== */
+========================================================= */
 
 const firebaseConfig = {
-    apiKey: "AIzaSyBZC1ln8Qxkq_JJBHpMtF8zy850T3rHcg",
+    apiKey: "YOUR_FIREBASE_API_KEY",
     authDomain: "apex-qc-hold-monitor.firebaseapp.com",
-    databaseURL: "https://apex-qc-hold-monitor-default-rtdb.asia-southeast1.firebasedatabase.app/",
+    databaseURL:
+        "https://apex-qc-hold-monitor-default-rtdb.asia-southeast1.firebasedatabase.app/",
     projectId: "apex-qc-hold-monitor",
     storageBucket: "apex-qc-hold-monitor.firebasestorage.app",
-    messagingSenderId: "1006270751442",
-    appId: "1:1006270751442:web:dca6ce7f3b3a235ee9030b"
+    messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+    appId: "YOUR_FIREBASE_APP_ID"
 };
 
+
+/*
+   IMPORTANT:
+   Replace the placeholder Firebase values above with the
+   exact Firebase config from your Firebase console.
+*/
+
 const app = initializeApp(firebaseConfig);
+
 const db = getDatabase(app);
 
 
-/* =====================================================
+/* =========================================================
    CLOUDINARY
-===================================================== */
+========================================================= */
 
 const CLOUDINARY_CLOUD_NAME = "org593vv";
+
 const CLOUDINARY_UPLOAD_PRESET = "apex_qc_hold";
 
 const CLOUDINARY_UPLOAD_URL =
-    "https://api.cloudinary.com/v1_1/org593vv/image/upload";
+    `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`;
 
 
-/* =====================================================
-   DOM ELEMENTS
-===================================================== */
+/* =========================================================
+   DOM REFERENCES
+========================================================= */
 
 const addHoldBtn =
     document.getElementById("addHoldBtn");
@@ -54,46 +71,29 @@ const addHoldBtn =
 const addHoldModal =
     document.getElementById("addHoldModal");
 
-/* IMPORTANT:
-   These IDs now exactly match index.html
-*/
-
-const closeModalBtn =
+const closeAddHold =
     document.getElementById("closeAddHold");
 
-const cancelHoldBtn =
+const cancelHold =
     document.getElementById("cancelHold");
 
 const holdForm =
     document.getElementById("holdForm");
 
-
 const detailsModal =
     document.getElementById("detailsModal");
 
-const closeDetailsBtn =
+const closeDetails =
     document.getElementById("closeDetails");
 
 const detailsContent =
     document.getElementById("detailsContent");
-
 
 const holdList =
     document.getElementById("holdList");
 
 const historyList =
     document.getElementById("historyList");
-
-
-/* Tabs are selected using data-tab.
-   This avoids depending on IDs that do not exist.
-*/
-
-const tabButtons =
-    document.querySelectorAll(".tab");
-
-
-/* Search / Filters */
 
 const searchInput =
     document.getElementById("searchInput");
@@ -107,31 +107,43 @@ const statusFilter =
 const reasonFilter =
     document.getElementById("reasonFilter");
 
+const labelPhoto =
+    document.getElementById("labelPhoto");
 
-/* Summary */
+const photoPreview =
+    document.getElementById("photoPreview");
 
-const activeHoldsElement =
+const uploadProgress =
+    document.getElementById("uploadProgress");
+
+const saveHoldBtn =
+    document.getElementById("saveHoldBtn");
+
+
+/* SUMMARY */
+
+const activeHoldsEl =
     document.getElementById("activeHolds");
 
-const actionRequiredElement =
+const actionRequiredEl =
     document.getElementById("actionRequired");
 
-const over24Element =
+const over24El =
     document.getElementById("over24");
 
-const over48Element =
+const over48El =
     document.getElementById("over48");
 
-const releasedElement =
+const releasedEl =
     document.getElementById("released");
 
-const totalWeightElement =
+const totalWeightEl =
     document.getElementById("totalWeight");
 
 
-/* =====================================================
-   GLOBAL DATA
-===================================================== */
+/* =========================================================
+   GLOBAL STATE
+========================================================= */
 
 let holds = {};
 
@@ -140,13 +152,16 @@ let currentHoldId = null;
 let currentTab = "active";
 
 
-/* =====================================================
-   HELPER FUNCTIONS
-===================================================== */
+/* =========================================================
+   HELPERS
+========================================================= */
 
 function escapeHtml(value) {
 
-    if (value === null || value === undefined) {
+    if (
+        value === null ||
+        value === undefined
+    ) {
         return "";
     }
 
@@ -159,17 +174,9 @@ function escapeHtml(value) {
 }
 
 
-/* -----------------------------------------------------
-   Photo URL helper
-
-   Handles:
-   - Cloudinary URL string
-   - old Firebase object
-   - secure_url
-   - url
-   - imageUrl
-   - downloadURL
------------------------------------------------------ */
+/* =========================================================
+   PHOTO URL
+========================================================= */
 
 function getPhotoUrl(photo) {
 
@@ -181,24 +188,19 @@ function getPhotoUrl(photo) {
         return photo;
     }
 
-    if (typeof photo === "object") {
-
-        return (
-            photo.secure_url ||
-            photo.url ||
-            photo.imageUrl ||
-            photo.downloadURL ||
-            ""
-        );
-    }
-
-    return "";
+    return (
+        photo.secure_url ||
+        photo.url ||
+        photo.imageUrl ||
+        photo.downloadURL ||
+        ""
+    );
 }
 
 
-/* =====================================================
+/* =========================================================
    WORKFLOW
-===================================================== */
+========================================================= */
 
 function determineWorkflow(holdReason) {
 
@@ -206,17 +208,15 @@ function determineWorkflow(holdReason) {
         return "shadeApproval";
     }
 
-    if (holdReason === "GSM / Weight") {
+    if (
+        holdReason === "GSM / Weight"
+    ) {
         return "review";
     }
 
     return "inspection";
 }
 
-
-/* =====================================================
-   INITIAL WORKFLOW STATE
-===================================================== */
 
 function getInitialWorkflowState(workflowType) {
 
@@ -226,8 +226,8 @@ function getInitialWorkflowState(workflowType) {
             status: "SHADE_APPROVAL",
             currentStage: "PRINTING_MANAGER"
         };
-    }
 
+    }
 
     if (workflowType === "review") {
 
@@ -235,8 +235,8 @@ function getInitialWorkflowState(workflowType) {
             status: "REVIEW",
             currentStage: "REVIEW"
         };
-    }
 
+    }
 
     return {
         status: "HOLD",
@@ -245,9 +245,112 @@ function getInitialWorkflowState(workflowType) {
 }
 
 
-/* =====================================================
+/* =========================================================
+   STATUS LABEL
+========================================================= */
+
+function formatStatus(status) {
+
+    const labels = {
+
+        HOLD: "HOLD",
+
+        INSPECTION: "INSPECTION",
+
+        INSPECTION_DONE:
+            "INSPECTION DONE",
+
+        SHADE_APPROVAL:
+            "SHADE APPROVAL",
+
+        REVIEW:
+            "REVIEW",
+
+        RELEASED:
+            "RELEASED",
+
+        REJECTED:
+            "REJECTED"
+    };
+
+    return labels[status] || status || "UNKNOWN";
+}
+
+
+/* =========================================================
+   STATUS BADGE CLASS
+========================================================= */
+
+function getBadgeClass(status) {
+
+    const classes = {
+
+        HOLD:
+            "badge-hold",
+
+        INSPECTION:
+            "badge-inspection",
+
+        INSPECTION_DONE:
+            "badge-inspection-done",
+
+        SHADE_APPROVAL:
+            "badge-shade-approval",
+
+        REVIEW:
+            "badge-review",
+
+        RELEASED:
+            "badge-released",
+
+        REJECTED:
+            "badge-rejected"
+    };
+
+    return classes[status] || "badge-hold";
+}
+
+
+/* =========================================================
+   STAGE LABEL
+========================================================= */
+
+function formatStage(stage) {
+
+    const labels = {
+
+        INSPECTION:
+            "INSPECTION REQUIRED",
+
+        INSPECTION_DONE:
+            "INSPECTION COMPLETED",
+
+        PRINTING_MANAGER:
+            "PRINTING MANAGER",
+
+        QC_MANAGER:
+            "QC MANAGER",
+
+        GM:
+            "GENERAL MANAGER",
+
+        REVIEW:
+            "REVIEW",
+
+        RELEASED:
+            "RELEASED",
+
+        REJECTED:
+            "REJECTED"
+    };
+
+    return labels[stage] || stage || "-";
+}
+
+
+/* =========================================================
    DATE / TIME
-===================================================== */
+========================================================= */
 
 function formatDateTime(timestamp) {
 
@@ -255,89 +358,96 @@ function formatDateTime(timestamp) {
         return "-";
     }
 
-    const date = new Date(timestamp);
+    const date =
+        new Date(timestamp);
 
     if (Number.isNaN(date.getTime())) {
         return "-";
     }
 
-    return date.toLocaleString("en-IN", {
-        day: "2-digit",
-        month: "2-digit",
-        year: "numeric",
-        hour: "2-digit",
-        minute: "2-digit"
-    });
+    return date.toLocaleString(
+        "en-IN",
+        {
+            day: "2-digit",
+            month: "2-digit",
+            year: "numeric",
+            hour: "2-digit",
+            minute: "2-digit",
+            hour12: true
+        }
+    );
 }
 
 
-/* =====================================================
-   HOLD AGE
-===================================================== */
+/* =========================================================
+   HOLD DURATION
+========================================================= */
 
-function getHoldDuration(hold) {
-
-    if (!hold || !hold.holdTimestamp) {
-        return {
-            milliseconds: 0,
-            hours: 0,
-            text: "0h 0m"
-        };
-    }
+function getHoldDurationMs(hold) {
 
     const start =
-        Number(hold.holdTimestamp);
+        Number(hold?.holdTimestamp || 0);
+
+    if (!start) {
+        return 0;
+    }
 
     const end =
-        hold.releaseTimestamp
-            ? Number(hold.releaseTimestamp)
-            : Date.now();
+        Number(
+            hold?.releaseTimestamp ||
+            Date.now()
+        );
 
-    const milliseconds =
-        Math.max(0, end - start);
+    return Math.max(
+        0,
+        end - start
+    );
+}
+
+
+function formatDuration(ms) {
+
+    if (!ms) {
+        return "0h 0m";
+    }
 
     const totalMinutes =
-        Math.floor(milliseconds / 60000);
+        Math.floor(ms / 60000);
 
     const days =
-        Math.floor(totalMinutes / 1440);
+        Math.floor(
+            totalMinutes / 1440
+        );
 
     const hours =
-        Math.floor((totalMinutes % 1440) / 60);
+        Math.floor(
+            (totalMinutes % 1440) / 60
+        );
 
     const minutes =
         totalMinutes % 60;
 
-    let text = "";
-
     if (days > 0) {
-        text += `${days}d `;
+        return `${days}d ${hours}h ${minutes}m`;
     }
 
-    text += `${hours}h ${minutes}m`;
-
-    return {
-        milliseconds,
-        hours: milliseconds / 3600000,
-        text
-    };
+    return `${hours}h ${minutes}m`;
 }
 
 
-/* =====================================================
-   AGE CLASS
-===================================================== */
-
 function getAgeClass(hold) {
 
-    const duration =
-        getHoldDuration(hold);
+    const ms =
+        getHoldDurationMs(hold);
 
-    if (duration.hours >= 48) {
+    const hours =
+        ms / 3600000;
+
+    if (hours >= 48) {
         return "critical";
     }
 
-    if (duration.hours >= 24) {
+    if (hours >= 24) {
         return "warning";
     }
 
@@ -345,99 +455,160 @@ function getAgeClass(hold) {
 }
 
 
-/* =====================================================
-   STATUS LABEL
-===================================================== */
-
-function formatStatus(status) {
-
-    const map = {
-
-        HOLD: "HOLD",
-
-        INSPECTION: "INSPECTION",
-
-        INSPECTION_DONE: "INSPECTION DONE",
-
-        SHADE_APPROVAL: "SHADE REVIEW",
-
-        REVIEW: "REVIEW",
-
-        RELEASED: "RELEASED",
-
-        REJECTED: "REJECTED"
-    };
-
-    return map[status] || status || "-";
-}
-
-
-/* =====================================================
-   STAGE LABEL
-===================================================== */
-
-function formatStage(stage) {
-
-    const map = {
-
-        INSPECTION:
-            "Inspection Required",
-
-        INSPECTION_DONE:
-            "Inspection Done",
-
-        PRINTING_MANAGER:
-            "Printing Manager",
-
-        QC_MANAGER:
-            "QC Manager",
-
-        GM:
-            "GM Approval",
-
-        REVIEW:
-            "Review Required",
-
-        RELEASED:
-            "Released",
-
-        REJECTED:
-            "Rejected"
-    };
-
-    return map[stage] || stage || "-";
-}
-
-
-/* =====================================================
-   ACTION REQUIRED
-===================================================== */
+/* =========================================================
+   ACTION REQUIREMENT
+========================================================= */
 
 function requiresAction(hold) {
 
-    if (!hold) {
-        return false;
-    }
-
-    if (
-        hold.status === "RELEASED" ||
-        hold.status === "REJECTED"
-    ) {
-        return false;
-    }
-
-    return true;
+    return (
+        hold &&
+        hold.status !== "RELEASED" &&
+        hold.status !== "REJECTED"
+    );
 }
 
 
-/* =====================================================
+/* =========================================================
+   MODAL CONTROL
+========================================================= */
+
+function openModal(modal) {
+
+    if (!modal) {
+        return;
+    }
+
+    modal.classList.remove("hidden");
+
+    modal.setAttribute(
+        "aria-hidden",
+        "false"
+    );
+
+    document.body.classList.add(
+        "modal-open"
+    );
+}
+
+
+function closeModal(modal) {
+
+    if (!modal) {
+        return;
+    }
+
+    modal.classList.add("hidden");
+
+    modal.setAttribute(
+        "aria-hidden",
+        "true"
+    );
+
+    if (
+        addHoldModal.classList.contains("hidden") &&
+        detailsModal.classList.contains("hidden")
+    ) {
+        document.body.classList.remove(
+            "modal-open"
+        );
+    }
+}
+
+
+/* =========================================================
+   ADD HOLD MODAL
+========================================================= */
+
+function openAddHoldModal() {
+
+    holdForm.reset();
+
+    photoPreview.innerHTML = "";
+
+    uploadProgress.textContent = "";
+
+    saveHoldBtn.disabled = false;
+
+    saveHoldBtn.textContent =
+        "Save Hold";
+
+    openModal(addHoldModal);
+}
+
+
+function closeAddHoldModal() {
+
+    closeModal(addHoldModal);
+
+    holdForm.reset();
+
+    photoPreview.innerHTML = "";
+
+    uploadProgress.textContent = "";
+}
+
+
+/* =========================================================
+   PHOTO PREVIEW
+========================================================= */
+
+labelPhoto.addEventListener(
+    "change",
+    () => {
+
+        photoPreview.innerHTML = "";
+
+        uploadProgress.textContent = "";
+
+        const file =
+            labelPhoto.files?.[0];
+
+        if (!file) {
+            return;
+        }
+
+        if (
+            !file.type.startsWith("image/")
+        ) {
+
+            alert(
+                "Please select a valid image file."
+            );
+
+            labelPhoto.value = "";
+
+            return;
+        }
+
+        const reader =
+            new FileReader();
+
+        reader.onload = event => {
+
+            photoPreview.innerHTML = `
+                <img
+                    src="${event.target.result}"
+                    alt="Label photo preview"
+                >
+            `;
+        };
+
+        reader.readAsDataURL(file);
+    }
+);
+
+
+/* =========================================================
    CLOUDINARY UPLOAD
-===================================================== */
+========================================================= */
 
 async function uploadPhoto(file) {
 
     if (!file) {
-        return null;
+        throw new Error(
+            "Label photo is required."
+        );
     }
 
     const formData =
@@ -454,6 +625,10 @@ async function uploadPhoto(file) {
     );
 
 
+    uploadProgress.textContent =
+        "Uploading photo...";
+
+
     const response =
         await fetch(
             CLOUDINARY_UPLOAD_URL,
@@ -466,262 +641,311 @@ async function uploadPhoto(file) {
 
     if (!response.ok) {
 
+        let errorMessage =
+            "Photo upload failed.";
+
+        try {
+
+            const errorData =
+                await response.json();
+
+            errorMessage =
+                errorData?.error?.message ||
+                errorMessage;
+
+        } catch {
+            // Ignore JSON parsing error
+        }
+
         throw new Error(
-            "Photo upload failed."
+            errorMessage
         );
     }
 
 
-    const data =
+    const result =
         await response.json();
 
 
-    return data;
+    if (!result.secure_url) {
+
+        throw new Error(
+            "Cloudinary did not return a valid image URL."
+        );
+    }
+
+
+    uploadProgress.textContent =
+        "Photo uploaded successfully.";
+
+    return result;
 }
 
 
-/* =====================================================
-   OPEN ADD HOLD MODAL
-===================================================== */
+/* =========================================================
+   CREATE ACTION OBJECT
+========================================================= */
 
-function openAddHoldModal() {
+function createAction(
+    action,
+    person,
+    remarks
+) {
 
-    if (!addHoldModal) {
-        return;
-    }
+    return {
 
-    addHoldModal.classList.add("show");
+        action,
 
-    addHoldModal.classList.remove("hidden");
+        person:
+            person || "",
 
-    document.body.classList.add("modal-open");
+        remarks:
+            remarks || "",
 
-    const firstInput =
-        addHoldModal.querySelector(
-            "input, select, textarea"
+        timestamp:
+            Date.now()
+    };
+}
+
+
+/* =========================================================
+   ADD ACTION + UPDATE HOLD
+========================================================= */
+
+async function updateHoldWithAction(
+    holdId,
+    action,
+    person,
+    remarks,
+    changes = {}
+) {
+
+    const actionRef =
+        push(
+            ref(
+                db,
+                `holdRolls/${holdId}/actions`
+            )
         );
 
-    if (firstInput) {
+    const actionId =
+        actionRef.key;
 
-        setTimeout(() => {
-            firstInput.focus();
-        }, 100);
-    }
-}
-
-
-/* =====================================================
-   CLOSE ADD HOLD MODAL
-===================================================== */
-
-function closeAddHoldModal() {
-
-    if (!addHoldModal) {
-        return;
-    }
-
-    addHoldModal.classList.remove("show");
-
-    addHoldModal.classList.add("hidden");
-
-    document.body.classList.remove("modal-open");
-
-    if (holdForm) {
-        holdForm.reset();
-    }
-}
-
-
-/* =====================================================
-   OPEN DETAILS MODAL
-===================================================== */
-
-window.openDetails = function (holdId) {
-
-    currentHoldId =
-        holdId;
-
-    const hold =
-        holds[holdId];
-
-    if (!hold) {
-
-        console.error(
-            "Hold not found:",
-            holdId
+    const actionData =
+        createAction(
+            action,
+            person,
+            remarks
         );
 
-        return;
-    }
+    const updates = {
+
+        [`holdRolls/${holdId}/actions/${actionId}`]:
+            actionData,
+
+        [`holdRolls/${holdId}/updatedAt`]:
+            Date.now()
+    };
 
 
-    renderDetailsModal(hold);
+    Object.keys(changes).forEach(
+        key => {
+
+            updates[
+                `holdRolls/${holdId}/${key}`
+            ] =
+                changes[key];
+
+        }
+    );
 
 
-    if (detailsModal) {
-
-        detailsModal.classList.add("show");
-
-        detailsModal.classList.remove("hidden");
-
-        document.body.classList.add("modal-open");
-    }
-};
-
-
-/* =====================================================
-   CLOSE DETAILS MODAL
-===================================================== */
-
-function closeDetailsModal() {
-
-    currentHoldId = null;
-
-    if (detailsModal) {
-
-        detailsModal.classList.remove("show");
-
-        detailsModal.classList.add("hidden");
-
-        document.body.classList.remove("modal-open");
-    }
+    await update(
+        ref(db),
+        updates
+    );
 }
 
 
-/* =====================================================
+/* =========================================================
    CREATE HOLD
-===================================================== */
+========================================================= */
 
 async function createHold(event) {
 
     event.preventDefault();
 
+    if (!holdForm.checkValidity()) {
 
-    const saveButton =
-        document.getElementById("saveHoldBtn");
+        holdForm.reportValidity();
+
+        return;
+    }
 
 
-    if (saveButton) {
+    const formData =
+        new FormData(holdForm);
 
-        saveButton.disabled = true;
 
-        saveButton.textContent =
-            "SAVING...";
+    const jobNo =
+        String(
+            formData.get("jobNo") || ""
+        ).trim();
+
+    const jobName =
+        String(
+            formData.get("jobName") || ""
+        ).trim();
+
+    const rollNo =
+        String(
+            formData.get("rollNo") || ""
+        ).trim();
+
+    const netWeight =
+        Number(
+            formData.get("netWeight") || 0
+        );
+
+    const process =
+        String(
+            formData.get("process") || ""
+        ).trim();
+
+    const machine =
+        String(
+            formData.get("machine") || ""
+        ).trim();
+
+    const productionDate =
+        String(
+            formData.get("productionDate") || ""
+        ).trim();
+
+    const shift =
+        String(
+            formData.get("shift") || ""
+        ).trim();
+
+    const operator =
+        String(
+            formData.get("operator") || ""
+        ).trim();
+
+    const supervisor =
+        String(
+            formData.get("supervisor") || ""
+        ).trim();
+
+    const qcInspector =
+        String(
+            formData.get("qcInspector") || ""
+        ).trim();
+
+    const holdReason =
+        String(
+            formData.get("holdReason") || ""
+        ).trim();
+
+    const observation =
+        String(
+            formData.get("observation") || ""
+        ).trim();
+
+    const photoFile =
+        labelPhoto.files?.[0];
+
+
+    /* VALIDATION */
+
+    if (!jobNo) {
+
+        alert("Please enter Job Number.");
+
+        return;
+    }
+
+    if (!rollNo) {
+
+        alert("Please enter Roll Number.");
+
+        return;
+    }
+
+    if (!process) {
+
+        alert("Please select Process.");
+
+        return;
+    }
+
+    if (!productionDate) {
+
+        alert("Please select Production Date.");
+
+        return;
+    }
+
+    if (!shift) {
+
+        alert("Please select Shift.");
+
+        return;
+    }
+
+    if (!qcInspector) {
+
+        alert("Please enter QC Inspector.");
+
+        return;
+    }
+
+    if (!holdReason) {
+
+        alert("Please select Hold Reason.");
+
+        return;
+    }
+
+    if (!observation) {
+
+        alert("Please enter Observation.");
+
+        return;
+    }
+
+    if (!photoFile) {
+
+        alert(
+            "Please upload the roll label photo."
+        );
+
+        return;
     }
 
 
     try {
 
-        const formData =
-            new FormData(holdForm);
+        saveHoldBtn.disabled = true;
+
+        saveHoldBtn.textContent =
+            "Saving...";
 
 
-        const jobNo =
-            (formData.get("jobNo") || "").trim();
+        /* UPLOAD PHOTO */
 
-        const jobName =
-            (formData.get("jobName") || "").trim();
-
-        const rollNo =
-            (formData.get("rollNo") || "").trim();
-
-        const netWeight =
-            Number(
-                formData.get("netWeight") || 0
+        const photo =
+            await uploadPhoto(
+                photoFile
             );
 
-        const process =
-            (formData.get("process") || "").trim();
 
-        const machine =
-            (formData.get("machine") || "").trim();
-
-        const productionDate =
-            formData.get("productionDate") || "";
-
-        const shift =
-            (formData.get("shift") || "").trim();
-
-        const operator =
-            (formData.get("operator") || "").trim();
-
-        const supervisor =
-            (formData.get("supervisor") || "").trim();
-
-        const qcInspector =
-            (formData.get("qcInspector") || "").trim();
-
-        const holdReason =
-            (formData.get("holdReason") || "").trim();
-
-        const observation =
-            (formData.get("observation") || "").trim();
-
-
-        if (!jobNo) {
-            throw new Error(
-                "Please enter Job Number."
-            );
-        }
-
-        if (!rollNo) {
-            throw new Error(
-                "Please enter Roll Number."
-            );
-        }
-
-        if (!holdReason) {
-            throw new Error(
-                "Please select Hold Reason."
-            );
-        }
-
-        if (!qcInspector) {
-            throw new Error(
-                "Please enter QC Inspector."
-            );
-        }
-
-
-        /* ---------------------------------------------
-           PHOTO
-        --------------------------------------------- */
-
-        const photoInput =
-            document.getElementById("labelPhoto");
-
-        let cloudinaryData =
-            null;
-
-
-        if (
-            photoInput &&
-            photoInput.files &&
-            photoInput.files.length > 0
-        ) {
-
-            if (saveButton) {
-
-                saveButton.textContent =
-                    "UPLOADING PHOTO...";
-            }
-
-            cloudinaryData =
-                await uploadPhoto(
-                    photoInput.files[0]
-                );
-        }
-
-
-        /* ---------------------------------------------
-           WORKFLOW
-        --------------------------------------------- */
+        /* WORKFLOW */
 
         const workflowType =
             determineWorkflow(
                 holdReason
             );
-
 
         const workflowState =
             getInitialWorkflowState(
@@ -729,13 +953,14 @@ async function createHold(event) {
             );
 
 
-        /* ---------------------------------------------
-           HOLD ID
-        --------------------------------------------- */
+        /* HOLD ID */
 
         const holdRef =
             push(
-                ref(db, "holdRolls")
+                ref(
+                    db,
+                    "holdRolls"
+                )
             );
 
         const holdId =
@@ -746,27 +971,24 @@ async function createHold(event) {
             Date.now();
 
 
-        /* ---------------------------------------------
-           PHOTO URL
+        /* FIRST ACTION */
 
-           Store URL as string.
-           This prevents [object Object] problem.
-        --------------------------------------------- */
-
-        let labelPhoto = "";
-
-        if (cloudinaryData) {
-
-            labelPhoto =
-                cloudinaryData.secure_url ||
-                cloudinaryData.url ||
-                "";
-        }
+        const actionRef =
+            push(
+                ref(
+                    db,
+                    `holdRolls/${holdId}/actions`
+                )
+            );
 
 
-        /* ---------------------------------------------
-           HOLD DATA
-        --------------------------------------------- */
+        const initialAction =
+            createAction(
+                "HOLD CREATED",
+                qcInspector,
+                observation
+            );
+
 
         const holdData = {
 
@@ -778,7 +1000,10 @@ async function createHold(event) {
 
             rollNo,
 
-            netWeight,
+            netWeight:
+                Number.isFinite(netWeight)
+                    ? netWeight
+                    : 0,
 
             process,
 
@@ -798,7 +1023,17 @@ async function createHold(event) {
 
             observation,
 
-            labelPhoto,
+            labelPhoto: {
+
+                secure_url:
+                    photo.secure_url,
+
+                public_id:
+                    photo.public_id || "",
+
+                original_filename:
+                    photo.original_filename || ""
+            },
 
             workflowType,
 
@@ -810,15 +1045,22 @@ async function createHold(event) {
 
             holdTimestamp,
 
-            releaseTimestamp: null,
+            releaseTimestamp:
+                null,
 
-            actions: {}
+            createdAt:
+                holdTimestamp,
+
+            updatedAt:
+                holdTimestamp,
+
+            actions: {
+
+                [actionRef.key]:
+                    initialAction
+            }
         };
 
-
-        /* ---------------------------------------------
-           SAVE HOLD
-        --------------------------------------------- */
 
         await set(
             holdRef,
@@ -826,44 +1068,10 @@ async function createHold(event) {
         );
 
 
-        /* ---------------------------------------------
-           FIRST ACTION
-        --------------------------------------------- */
-
-        const firstActionRef =
-            push(
-                ref(
-                    db,
-                    `holdRolls/${holdId}/actions`
-                )
-            );
-
-
-        await set(
-            firstActionRef,
-            {
-
-                type: "HOLD CREATED",
-
-                person: qcInspector,
-
-                decision: "HOLD",
-
-                remarks:
-                    observation ||
-                    "Roll placed on QC hold.",
-
-                timestamp:
-                    holdTimestamp
-            }
-        );
-
-
         closeAddHoldModal();
 
-
         alert(
-            "Hold roll saved successfully."
+            `Hold created successfully.\n\nJob: ${jobNo}\nRoll: ${rollNo}`
         );
 
 
@@ -874,37 +1082,76 @@ async function createHold(event) {
             error
         );
 
-
         alert(
-            error.message ||
-            "Failed to save hold."
+            "Unable to create hold.\n\n" +
+            (
+                error?.message ||
+                "Please try again."
+            )
         );
-
 
     } finally {
 
-        if (saveButton) {
+        saveHoldBtn.disabled = false;
 
-            saveButton.disabled = false;
-
-            saveButton.textContent =
-                "SAVE HOLD";
-        }
+        saveHoldBtn.textContent =
+            "Save Hold";
     }
 }
 
 
-/* =====================================================
+/* =========================================================
+   DETAILS MODAL
+========================================================= */
+
+window.openDetails = function (holdId) {
+
+    currentHoldId =
+        holdId;
+
+    const hold =
+        holds[holdId];
+
+    if (!hold) {
+
+        alert(
+            "Hold record not found."
+        );
+
+        return;
+    }
+
+    renderDetailsModal(
+        hold
+    );
+
+    openModal(
+        detailsModal
+    );
+};
+
+
+/* =========================================================
+   CLOSE DETAILS
+========================================================= */
+
+function closeDetailsModal() {
+
+    closeModal(
+        detailsModal
+    );
+
+    currentHoldId =
+        null;
+}
+
+
+/* =========================================================
    INSPECTION DONE
-===================================================== */
+========================================================= */
 
 window.markInspectionDone =
     async function () {
-
-        if (!currentHoldId) {
-            return;
-        }
-
 
         const hold =
             holds[currentHoldId];
@@ -914,117 +1161,63 @@ window.markInspectionDone =
         }
 
 
-        const operatorInput =
-            document.getElementById(
-                "inspectionOperator"
-            );
+        const operator =
+            document
+                .getElementById(
+                    "inspectionOperator"
+                )
+                ?.value
+                .trim();
 
-        const supervisorInput =
-            document.getElementById(
-                "inspectionSupervisor"
-            );
-
-        const remarksInput =
-            document.getElementById(
-                "inspectionRemarks"
-            );
-
-
-        const inspectionOperator =
-            operatorInput
-                ? operatorInput.value.trim()
-                : "";
-
-        const inspectionSupervisor =
-            supervisorInput
-                ? supervisorInput.value.trim()
-                : "";
+        const supervisor =
+            document
+                .getElementById(
+                    "inspectionSupervisor"
+                )
+                ?.value
+                .trim();
 
         const remarks =
-            remarksInput
-                ? remarksInput.value.trim()
-                : "";
-
-
-        if (!inspectionOperator) {
-
-            alert(
-                "Please enter Inspection Operator name."
-            );
-
-            return;
-        }
-
-
-        if (!inspectionSupervisor) {
-
-            alert(
-                "Please enter Supervisor name."
-            );
-
-            return;
-        }
-
-
-        const timestamp =
-            Date.now();
-
-
-        const actionRef =
-            push(
-                ref(
-                    db,
-                    `holdRolls/${currentHoldId}/actions`
+            document
+                .getElementById(
+                    "inspectionRemarks"
                 )
+                ?.value
+                .trim();
+
+
+        if (!operator) {
+
+            alert(
+                "Please enter Inspection Operator."
             );
+
+            return;
+        }
+
+        if (!supervisor) {
+
+            alert(
+                "Please enter Inspection Supervisor."
+            );
+
+            return;
+        }
 
 
         try {
 
-            await set(
-                actionRef,
+            await updateHoldWithAction(
+
+                currentHoldId,
+
+                "INSPECTION DONE",
+
+                `${operator} / ${supervisor}`,
+
+                remarks,
+
                 {
-
-                    type:
-                        "INSPECTION DONE",
-
-                    person:
-                        inspectionSupervisor,
-
-                    inspectionOperator,
-
-                    decision:
-                        "INSPECTION DONE",
-
-                    remarks:
-                        remarks ||
-                        "Inspection completed.",
-
-                    timestamp
-                }
-            );
-
-
-            await update(
-                ref(
-                    db,
-                    `holdRolls/${currentHoldId}`
-                ),
-                {
-
-                    status:
-                        "INSPECTION_DONE",
-
-                    currentStage:
-                        "INSPECTION_DONE"
-                }
-            );
-
-
-            renderDetailsModal(
-                {
-                    ...hold,
-
                     status:
                         "INSPECTION_DONE",
 
@@ -1041,28 +1234,21 @@ window.markInspectionDone =
 
         } catch (error) {
 
-            console.error(
-                error
-            );
+            console.error(error);
 
             alert(
-                "Failed to update inspection."
+                "Unable to update inspection."
             );
         }
     };
 
 
-/* =====================================================
+/* =========================================================
    RELEASE INSPECTION HOLD
-===================================================== */
+========================================================= */
 
 window.releaseInspectionHold =
     async function () {
-
-        if (!currentHoldId) {
-            return;
-        }
-
 
         const hold =
             holds[currentHoldId];
@@ -1072,82 +1258,46 @@ window.releaseInspectionHold =
         }
 
 
-        const supervisorInput =
-            document.getElementById(
-                "releaseSupervisor"
-            );
-
-        const remarksInput =
-            document.getElementById(
-                "releaseRemarks"
-            );
-
-
         const supervisor =
-            supervisorInput
-                ? supervisorInput.value.trim()
-                : "";
+            document
+                .getElementById(
+                    "releaseSupervisor"
+                )
+                ?.value
+                .trim();
 
         const remarks =
-            remarksInput
-                ? remarksInput.value.trim()
-                : "";
+            document
+                .getElementById(
+                    "releaseRemarks"
+                )
+                ?.value
+                .trim();
 
 
         if (!supervisor) {
 
             alert(
-                "Please enter Supervisor name."
+                "Please enter Release Supervisor."
             );
 
             return;
         }
 
 
-        const timestamp =
-            Date.now();
-
-
         try {
 
-            const actionRef =
-                push(
-                    ref(
-                        db,
-                        `holdRolls/${currentHoldId}/actions`
-                    )
-                );
+            await updateHoldWithAction(
 
+                currentHoldId,
 
-            await set(
-                actionRef,
+                "RELEASED FOR PRODUCTION",
+
+                supervisor,
+
+                remarks,
+
                 {
-
-                    type:
-                        "RELEASED FOR PRODUCTION",
-
-                    person:
-                        supervisor,
-
-                    decision:
-                        "RELEASE",
-
-                    remarks:
-                        remarks ||
-                        "Released for further production.",
-
-                    timestamp
-                }
-            );
-
-
-            await update(
-                ref(
-                    db,
-                    `holdRolls/${currentHoldId}`
-                ),
-                {
-
                     status:
                         "RELEASED",
 
@@ -1155,12 +1305,9 @@ window.releaseInspectionHold =
                         "RELEASED",
 
                     releaseTimestamp:
-                        timestamp
+                        Date.now()
                 }
             );
-
-
-            closeDetailsModal();
 
 
             alert(
@@ -1170,62 +1317,49 @@ window.releaseInspectionHold =
 
         } catch (error) {
 
-            console.error(
-                error
-            );
+            console.error(error);
 
             alert(
-                "Failed to release roll."
+                "Unable to release hold."
             );
         }
     };
 
 
-/* =====================================================
+/* =========================================================
    REJECT INSPECTION HOLD
-===================================================== */
+========================================================= */
 
 window.rejectInspectionHold =
     async function () {
 
-        if (!currentHoldId) {
-            return;
-        }
-
-
-        const supervisorInput =
-            document.getElementById(
-                "rejectSupervisor"
-            );
-
-        const reasonInput =
-            document.getElementById(
-                "rejectRemarks"
-            );
-
-
         const supervisor =
-            supervisorInput
-                ? supervisorInput.value.trim()
-                : "";
+            document
+                .getElementById(
+                    "rejectSupervisor"
+                )
+                ?.value
+                .trim();
 
-        const reason =
-            reasonInput
-                ? reasonInput.value.trim()
-                : "";
+        const remarks =
+            document
+                .getElementById(
+                    "rejectRemarks"
+                )
+                ?.value
+                .trim();
 
 
         if (!supervisor) {
 
             alert(
-                "Please enter Supervisor name."
+                "Please enter Reject Supervisor."
             );
 
             return;
         }
 
-
-        if (!reason) {
+        if (!remarks) {
 
             alert(
                 "Please enter rejection reason."
@@ -1235,49 +1369,19 @@ window.rejectInspectionHold =
         }
 
 
-        const timestamp =
-            Date.now();
-
-
         try {
 
-            const actionRef =
-                push(
-                    ref(
-                        db,
-                        `holdRolls/${currentHoldId}/actions`
-                    )
-                );
+            await updateHoldWithAction(
 
+                currentHoldId,
 
-            await set(
-                actionRef,
+                "REJECTED",
+
+                supervisor,
+
+                remarks,
+
                 {
-
-                    type:
-                        "REJECTED",
-
-                    person:
-                        supervisor,
-
-                    decision:
-                        "REJECT",
-
-                    remarks:
-                        reason,
-
-                    timestamp
-                }
-            );
-
-
-            await update(
-                ref(
-                    db,
-                    `holdRolls/${currentHoldId}`
-                ),
-                {
-
                     status:
                         "REJECTED",
 
@@ -1285,12 +1389,9 @@ window.rejectInspectionHold =
                         "REJECTED",
 
                     releaseTimestamp:
-                        timestamp
+                        Date.now()
                 }
             );
-
-
-            closeDetailsModal();
 
 
             alert(
@@ -1300,20 +1401,18 @@ window.rejectInspectionHold =
 
         } catch (error) {
 
-            console.error(
-                error
-            );
+            console.error(error);
 
             alert(
-                "Failed to reject roll."
+                "Unable to reject hold."
             );
         }
     };
 
 
-/* =====================================================
+/* =========================================================
    SHADE APPROVAL
-===================================================== */
+========================================================= */
 
 window.submitShadeApproval =
     async function (
@@ -1321,11 +1420,6 @@ window.submitShadeApproval =
         decision
     ) {
 
-        if (!currentHoldId) {
-            return;
-        }
-
-
         const hold =
             holds[currentHoldId];
 
@@ -1334,62 +1428,60 @@ window.submitShadeApproval =
         }
 
 
-        let nameId = "";
+        const fieldMap = {
 
-        let remarksId = "";
+            PRINTING_MANAGER: {
+                nameId:
+                    "printingManagerName",
+
+                remarksId:
+                    "printingManagerRemarks"
+            },
+
+            QC_MANAGER: {
+                nameId:
+                    "qcManagerName",
+
+                remarksId:
+                    "qcManagerRemarks"
+            },
+
+            GM: {
+                nameId:
+                    "gmName",
+
+                remarksId:
+                    "gmRemarks"
+            }
+        };
 
 
-        if (stage === "PRINTING_MANAGER") {
+        const fields =
+            fieldMap[stage];
 
-            nameId =
-                "printingManagerName";
-
-            remarksId =
-                "printingManagerRemarks";
+        if (!fields) {
+            return;
         }
 
-        else if (stage === "QC_MANAGER") {
 
-            nameId =
-                "qcManagerName";
-
-            remarksId =
-                "qcManagerRemarks";
-        }
-
-        else if (stage === "GM") {
-
-            nameId =
-                "gmName";
-
-            remarksId =
-                "gmRemarks";
-        }
-
-
-        const nameInput =
-            document.getElementById(
-                nameId
-            );
-
-        const remarksInput =
-            document.getElementById(
-                remarksId
-            );
-
-
-        const person =
-            nameInput
-                ? nameInput.value.trim()
-                : "";
+        const name =
+            document
+                .getElementById(
+                    fields.nameId
+                )
+                ?.value
+                .trim();
 
         const remarks =
-            remarksInput
-                ? remarksInput.value.trim()
-                : "";
+            document
+                .getElementById(
+                    fields.remarksId
+                )
+                ?.value
+                .trim();
 
 
-        if (!person) {
+        if (!name) {
 
             alert(
                 "Please enter your name."
@@ -1405,213 +1497,165 @@ window.submitShadeApproval =
         ) {
 
             alert(
-                "Please enter rejection reason."
+                "Please enter rejection remarks."
             );
 
             return;
         }
 
 
-        const timestamp =
-            Date.now();
+        let actionText =
+            "SHADE APPROVED";
+
+        let changes = {};
+
+
+        if (decision === "REJECT") {
+
+            actionText =
+                "SHADE REJECTED";
+
+            changes = {
+
+                status:
+                    "REJECTED",
+
+                currentStage:
+                    "REJECTED",
+
+                releaseTimestamp:
+                    Date.now()
+            };
+
+        } else {
+
+            if (
+                stage ===
+                "PRINTING_MANAGER"
+            ) {
+
+                changes = {
+
+                    status:
+                        "SHADE_APPROVAL",
+
+                    currentStage:
+                        "QC_MANAGER"
+                };
+
+            } else if (
+                stage === "QC_MANAGER"
+            ) {
+
+                changes = {
+
+                    status:
+                        "SHADE_APPROVAL",
+
+                    currentStage:
+                        "GM"
+                };
+
+            } else if (
+                stage === "GM"
+            ) {
+
+                changes = {
+
+                    status:
+                        "RELEASED",
+
+                    currentStage:
+                        "RELEASED",
+
+                    releaseTimestamp:
+                        Date.now()
+                };
+            }
+        }
 
 
         try {
 
-            const actionRef =
-                push(
-                    ref(
-                        db,
-                        `holdRolls/${currentHoldId}/actions`
-                    )
-                );
+            await updateHoldWithAction(
 
+                currentHoldId,
 
-            await set(
-                actionRef,
-                {
+                actionText,
 
-                    type:
-                        `${formatStage(stage)} DECISION`,
+                name,
 
-                    person,
+                remarks,
 
-                    decision,
-
-                    remarks:
-                        remarks ||
-                        decision,
-
-                    timestamp
-                }
-            );
-
-
-            let nextStatus =
-                hold.status;
-
-            let nextStage =
-                hold.currentStage;
-
-            let releaseTimestamp =
-                hold.releaseTimestamp || null;
-
-
-            if (decision === "REJECT") {
-
-                nextStatus =
-                    "REJECTED";
-
-                nextStage =
-                    "REJECTED";
-
-                releaseTimestamp =
-                    timestamp;
-            }
-
-
-            else if (stage === "PRINTING_MANAGER") {
-
-                nextStatus =
-                    "SHADE_APPROVAL";
-
-                nextStage =
-                    "QC_MANAGER";
-            }
-
-
-            else if (stage === "QC_MANAGER") {
-
-                nextStatus =
-                    "SHADE_APPROVAL";
-
-                nextStage =
-                    "GM";
-            }
-
-
-            else if (stage === "GM") {
-
-                nextStatus =
-                    "RELEASED";
-
-                nextStage =
-                    "RELEASED";
-
-                releaseTimestamp =
-                    timestamp;
-            }
-
-
-            await update(
-                ref(
-                    db,
-                    `holdRolls/${currentHoldId}`
-                ),
-                {
-
-                    status:
-                        nextStatus,
-
-                    currentStage:
-                        nextStage,
-
-                    releaseTimestamp
-                }
+                changes
             );
 
 
             if (
-                nextStatus === "RELEASED" ||
-                nextStatus === "REJECTED"
+                decision === "REJECT"
             ) {
 
-                closeDetailsModal();
+                alert(
+                    "Roll rejected."
+                );
+
+            } else if (
+                stage === "GM"
+            ) {
+
+                alert(
+                    "Shade approved and roll released."
+                );
 
             } else {
 
-                renderDetailsModal(
-                    {
-                        ...hold,
-
-                        status:
-                            nextStatus,
-
-                        currentStage:
-                            nextStage
-                    }
+                alert(
+                    "Approval recorded successfully."
                 );
             }
 
 
-            alert(
-                decision === "REJECT"
-                    ? "Roll rejected."
-                    : "Approval recorded."
-            );
-
-
         } catch (error) {
 
-            console.error(
-                error
-            );
+            console.error(error);
 
             alert(
-                "Failed to record approval."
+                "Unable to submit approval."
             );
         }
     };
 
 
-/* =====================================================
+/* =========================================================
    REVIEW WORKFLOW
-===================================================== */
+========================================================= */
 
 window.submitReview =
     async function (
         decision
     ) {
 
-        if (!currentHoldId) {
-            return;
-        }
-
-
-        const hold =
-            holds[currentHoldId];
-
-        if (!hold) {
-            return;
-        }
-
-
-        const nameInput =
-            document.getElementById(
-                "reviewPerson"
-            );
-
-        const remarksInput =
-            document.getElementById(
-                "reviewRemarks"
-            );
-
-
-        const person =
-            nameInput
-                ? nameInput.value.trim()
-                : "";
+        const reviewer =
+            document
+                .getElementById(
+                    "reviewPerson"
+                )
+                ?.value
+                .trim();
 
         const remarks =
-            remarksInput
-                ? remarksInput.value.trim()
-                : "";
+            document
+                .getElementById(
+                    "reviewRemarks"
+                )
+                ?.value
+                .trim();
 
 
-        if (!person) {
+        if (!reviewer) {
 
             alert(
-                "Please enter your name."
+                "Please enter Reviewer name."
             );
 
             return;
@@ -1624,162 +1668,71 @@ window.submitReview =
         ) {
 
             alert(
-                "Please enter rejection reason."
+                "Please enter rejection remarks."
             );
 
             return;
         }
 
 
-        const timestamp =
-            Date.now();
+        const changes = {
+
+            status:
+                decision === "RELEASE"
+                    ? "RELEASED"
+                    : "REJECTED",
+
+            currentStage:
+                decision === "RELEASE"
+                    ? "RELEASED"
+                    : "REJECTED",
+
+            releaseTimestamp:
+                Date.now()
+        };
 
 
         try {
 
-            const actionRef =
-                push(
-                    ref(
-                        db,
-                        `holdRolls/${currentHoldId}/actions`
-                    )
-                );
+            await updateHoldWithAction(
 
+                currentHoldId,
 
-            await set(
-                actionRef,
-                {
+                decision === "RELEASE"
+                    ? "REVIEW APPROVED"
+                    : "REVIEW REJECTED",
 
-                    type:
-                        "REVIEW DECISION",
+                reviewer,
 
-                    person,
+                remarks,
 
-                    decision,
-
-                    remarks:
-                        remarks ||
-                        decision,
-
-                    timestamp
-                }
+                changes
             );
-
-
-            let status =
-                "REVIEW";
-
-            let stage =
-                "REVIEW";
-
-            let releaseTimestamp =
-                hold.releaseTimestamp || null;
-
-
-            if (decision === "RELEASE") {
-
-                status =
-                    "RELEASED";
-
-                stage =
-                    "RELEASED";
-
-                releaseTimestamp =
-                    timestamp;
-            }
-
-
-            if (decision === "REJECT") {
-
-                status =
-                    "REJECTED";
-
-                stage =
-                    "REJECTED";
-
-                releaseTimestamp =
-                    timestamp;
-            }
-
-
-            await update(
-                ref(
-                    db,
-                    `holdRolls/${currentHoldId}`
-                ),
-                {
-
-                    status,
-
-                    currentStage:
-                        stage,
-
-                    releaseTimestamp
-                }
-            );
-
-
-            if (
-                status === "RELEASED" ||
-                status === "REJECTED"
-            ) {
-
-                closeDetailsModal();
-
-            } else {
-
-                renderDetailsModal(
-                    {
-                        ...hold,
-
-                        status,
-
-                        currentStage:
-                            stage
-                    }
-                );
-            }
 
 
             alert(
                 decision === "RELEASE"
-                    ? "Roll released."
-                    : decision === "REJECT"
-                        ? "Roll rejected."
-                        : "Review recorded."
+                    ? "Review approved. Roll released."
+                    : "Roll rejected."
             );
 
 
         } catch (error) {
 
-            console.error(
-                error
-            );
+            console.error(error);
 
             alert(
-                "Failed to record review."
+                "Unable to submit review."
             );
         }
     };
 
 
-/* =====================================================
-   DETAILS MODAL
-===================================================== */
+/* =========================================================
+   DETAILS MODAL RENDER
+========================================================= */
 
 function renderDetailsModal(hold) {
-
-    if (!detailsContent) {
-        return;
-    }
-
-
-    const age =
-        getHoldDuration(hold);
-
-    const ageClass =
-        getAgeClass(hold);
-
 
     const photoUrl =
         getPhotoUrl(
@@ -1787,847 +1740,989 @@ function renderDetailsModal(hold) {
         );
 
 
-    const actions =
-        hold.actions
-            ? Object.values(hold.actions)
-            : [];
+    const isClosed =
+        hold.status === "RELEASED" ||
+        hold.status === "REJECTED";
 
 
-    actions.sort(
-        (a, b) =>
-            Number(a.timestamp || 0) -
-            Number(b.timestamp || 0)
-    );
+    detailsContent.innerHTML = `
+
+        <div class="details-top">
+
+            <div class="details-top-item">
+
+                <label>Job Number</label>
+
+                <strong>
+                    ${escapeHtml(hold.jobNo)}
+                </strong>
+
+            </div>
 
 
-    let html = `
+            <div class="details-top-item">
 
-        <div class="details-container">
+                <label>Roll Number</label>
 
-            <div class="details-summary">
+                <strong>
+                    ${escapeHtml(hold.rollNo)}
+                </strong>
 
-                <div class="detail-title">
-                    <span class="detail-label">
-                        Job Number
+            </div>
+
+
+            <div class="details-top-item">
+
+                <label>Status</label>
+
+                <strong>
+                    <span class="badge ${getBadgeClass(hold.status)}">
+                        ${escapeHtml(formatStatus(hold.status))}
                     </span>
-
-                    <strong>
-                        ${escapeHtml(hold.jobNo)}
-                    </strong>
-                </div>
-
-                <div class="detail-title">
-                    <span class="detail-label">
-                        Roll Number
-                    </span>
-
-                    <strong>
-                        ${escapeHtml(hold.rollNo)}
-                    </strong>
-                </div>
-
-                <div class="detail-title">
-                    <span class="detail-label">
-                        Status
-                    </span>
-
-                    <strong>
-                        ${escapeHtml(
-                            formatStatus(
-                                hold.status
-                            )
-                        )}
-                    </strong>
-                </div>
+                </strong>
 
             </div>
 
 
-            <div class="details-grid">
-
-                <div>
-                    <span>Job Name</span>
-                    <strong>
-                        ${escapeHtml(
-                            hold.jobName || "-"
-                        )}
-                    </strong>
-                </div>
-
-                <div>
-                    <span>Net Weight</span>
-                    <strong>
-                        ${Number(
-                            hold.netWeight || 0
-                        ).toFixed(2)}
-                        kg
-                    </strong>
-                </div>
-
-                <div>
-                    <span>Process</span>
-                    <strong>
-                        ${escapeHtml(
-                            hold.process || "-"
-                        )}
-                    </strong>
-                </div>
-
-                <div>
-                    <span>Machine</span>
-                    <strong>
-                        ${escapeHtml(
-                            hold.machine || "-"
-                        )}
-                    </strong>
-                </div>
-
-                <div>
-                    <span>Production Date</span>
-                    <strong>
-                        ${escapeHtml(
-                            hold.productionDate || "-"
-                        )}
-                    </strong>
-                </div>
-
-                <div>
-                    <span>Shift</span>
-                    <strong>
-                        ${escapeHtml(
-                            hold.shift || "-"
-                        )}
-                    </strong>
-                </div>
-
-                <div>
-                    <span>Operator</span>
-                    <strong>
-                        ${escapeHtml(
-                            hold.operator || "-"
-                        )}
-                    </strong>
-                </div>
-
-                <div>
-                    <span>Supervisor</span>
-                    <strong>
-                        ${escapeHtml(
-                            hold.supervisor || "-"
-                        )}
-                    </strong>
-                </div>
-
-                <div>
-                    <span>QC Inspector</span>
-                    <strong>
-                        ${escapeHtml(
-                            hold.qcInspector || "-"
-                        )}
-                    </strong>
-                </div>
-
-                <div>
-                    <span>Hold Reason</span>
-                    <strong>
-                        ${escapeHtml(
-                            hold.holdReason || "-"
-                        )}
-                    </strong>
-                </div>
-
-                <div>
-                    <span>Current Stage</span>
-                    <strong>
-                        ${escapeHtml(
-                            formatStage(
-                                hold.currentStage
-                            )
-                        )}
-                    </strong>
-                </div>
-
-                <div>
-                    <span>Hold Time</span>
-                    <strong class="${ageClass}">
-                        ${age.text}
-                    </strong>
-                </div>
-
-                <div>
-                    <span>Hold Created</span>
-                    <strong>
-                        ${formatDateTime(
-                            hold.holdTimestamp
-                        )}
-                    </strong>
-                </div>
-
-                <div>
-                    <span>Released / Closed</span>
-                    <strong>
-                        ${hold.releaseTimestamp
-                            ? formatDateTime(
-                                hold.releaseTimestamp
-                            )
-                            : "-"
-                        }
-                    </strong>
-                </div>
-
-            </div>
-
-
-            <div class="details-section">
-
-                <h3>Observation</h3>
-
-                <div class="observation-box">
-                    ${escapeHtml(
-                        hold.observation || "-"
-                    )}
-                </div>
-
-            </div>
-    `;
-
-
-    /* =================================================
-       PHOTO
-    ================================================= */
-
-    if (photoUrl) {
-
-        html += `
-
-            <div class="details-section">
-
-                <h3>Label Photo</h3>
-
-                <div class="photo-container">
-
-                    <img
-                        src="${escapeHtml(photoUrl)}"
-                        alt="Hold roll label"
-                        class="hold-photo"
-                        onclick="window.open('${escapeHtml(photoUrl)}', '_blank')"
-                    >
-
-                </div>
-
-            </div>
-
-        `;
-    }
-
-
-    /* =================================================
-       WORKFLOW ACTION PANEL
-    ================================================= */
-
-    if (
-        hold.status !== "RELEASED" &&
-        hold.status !== "REJECTED"
-    ) {
-
-        html += renderActionPanel(
-            hold
-        );
-    }
-
-
-    /* =================================================
-       TIMELINE
-    ================================================= */
-
-    html += `
-
-        <div class="details-section">
-
-            <h3>Action History</h3>
-
-            <div class="timeline">
-    `;
-
-
-    if (actions.length === 0) {
-
-        html += `
-            <div class="timeline-empty">
-                No actions recorded.
-            </div>
-        `;
-
-    } else {
-
-        actions.forEach(
-            action => {
-
-                html += `
-
-                    <div class="timeline-item">
-
-                        <div class="timeline-dot"></div>
-
-                        <div class="timeline-content">
-
-                            <div class="timeline-top">
-
-                                <strong>
-                                    ${escapeHtml(
-                                        action.type ||
-                                        "ACTION"
-                                    )}
-                                </strong>
-
-                                <span>
-                                    ${formatDateTime(
-                                        action.timestamp
-                                    )}
-                                </span>
-
-                            </div>
-
-                            <div>
-                                <strong>
-                                    Person:
-                                </strong>
-
-                                ${escapeHtml(
-                                    action.person || "-"
-                                )}
-                            </div>
-
-                `;
-
-
-                if (
-                    action.inspectionOperator
-                ) {
-
-                    html += `
-
-                        <div>
-                            <strong>
-                                Inspection Operator:
-                            </strong>
-
-                            ${escapeHtml(
-                                action.inspectionOperator
-                            )}
-                        </div>
-
-                    `;
-                }
-
-
-                if (action.decision) {
-
-                    html += `
-
-                        <div>
-                            <strong>
-                                Decision:
-                            </strong>
-
-                            ${escapeHtml(
-                                action.decision
-                            )}
-                        </div>
-
-                    `;
-                }
-
-
-                if (action.remarks) {
-
-                    html += `
-
-                        <div>
-                            <strong>
-                                Remarks:
-                            </strong>
-
-                            ${escapeHtml(
-                                action.remarks
-                            )}
-                        </div>
-
-                    `;
-                }
-
-
-                html += `
-
-                        </div>
-
-                    </div>
-
-                `;
-            }
-        );
-    }
-
-
-    html += `
+            <div class="details-top-item">
+
+                <label>Age</label>
+
+                <strong>
+                    ${escapeHtml(formatDuration(
+                        getHoldDurationMs(hold)
+                    ))}
+                </strong>
 
             </div>
 
         </div>
 
-    </div>
 
+        <section class="details-section">
+
+            <h3>Roll Information</h3>
+
+            <div class="hold-details">
+
+                ${detailHtml(
+                    "Job Name",
+                    hold.jobName
+                )}
+
+                ${detailHtml(
+                    "Net Weight",
+                    hold.netWeight
+                        ? `${hold.netWeight} kg`
+                        : "-"
+                )}
+
+                ${detailHtml(
+                    "Process",
+                    hold.process
+                )}
+
+                ${detailHtml(
+                    "Machine",
+                    hold.machine
+                )}
+
+                ${detailHtml(
+                    "Production Date",
+                    hold.productionDate
+                )}
+
+                ${detailHtml(
+                    "Shift",
+                    hold.shift
+                )}
+
+                ${detailHtml(
+                    "Operator",
+                    hold.operator
+                )}
+
+                ${detailHtml(
+                    "Supervisor",
+                    hold.supervisor
+                )}
+
+                ${detailHtml(
+                    "QC Inspector",
+                    hold.qcInspector
+                )}
+
+                ${detailHtml(
+                    "Current Stage",
+                    formatStage(
+                        hold.currentStage
+                    )
+                )}
+
+            </div>
+
+        </section>
+
+
+        <section class="details-section">
+
+            <h3>Hold Details</h3>
+
+            <div class="hold-details">
+
+                ${detailHtml(
+                    "Hold Reason",
+                    hold.holdReason
+                )}
+
+                ${detailHtml(
+                    "Hold Created",
+                    formatDateTime(
+                        hold.holdTimestamp
+                    )
+                )}
+
+                ${detailHtml(
+                    "Release / Closed",
+                    hold.releaseTimestamp
+                        ? formatDateTime(
+                            hold.releaseTimestamp
+                        )
+                        : "-"
+                )}
+
+            </div>
+
+            <div class="detail-item observation-box">
+
+                <label>Observation</label>
+
+                <span>
+                    ${escapeHtml(
+                        hold.observation || "-"
+                    )}
+                </span>
+
+            </div>
+
+        </section>
+
+
+        ${
+            photoUrl
+                ? `
+                    <section class="details-section">
+
+                        <h3>Roll Label Photo</h3>
+
+                        <img
+                            src="${escapeHtml(photoUrl)}"
+                            class="label-photo"
+                            alt="Roll label photo"
+                        >
+
+                    </section>
+                `
+                : ""
+        }
+
+
+        ${
+            !isClosed
+                ? renderActionPanel(hold)
+                : ""
+        }
+
+
+        <section class="details-section">
+
+            <h3>Action History</h3>
+
+            ${renderTimeline(
+                hold.actions
+            )}
+
+        </section>
     `;
-
-
-    detailsContent.innerHTML =
-        html;
 }
 
 
-/* =====================================================
+/* =========================================================
+   DETAIL ITEM
+========================================================= */
+
+function detailHtml(
+    label,
+    value
+) {
+
+    return `
+
+        <div class="detail-item">
+
+            <label>
+                ${escapeHtml(label)}
+            </label>
+
+            <span>
+                ${escapeHtml(
+                    value === null ||
+                    value === undefined ||
+                    value === ""
+                        ? "-"
+                        : value
+                )}
+            </span>
+
+        </div>
+    `;
+}
+
+
+/* =========================================================
    ACTION PANEL
-===================================================== */
+========================================================= */
 
 function renderActionPanel(hold) {
 
-    let html = `
-
-        <div class="action-panel">
-
-    `;
-
-
-    /* =================================================
-       INSPECTION
-    ================================================= */
-
     if (
-        hold.workflowType === "inspection" &&
-        (
-            hold.status === "HOLD" ||
-            hold.status === "INSPECTION"
-        )
+        hold.workflowType ===
+        "inspection"
     ) {
 
-        html += `
+        if (
+            hold.status === "HOLD" ||
+            hold.currentStage === "INSPECTION"
+        ) {
+
+            return `
+
+                <section class="action-panel">
+
+                    <h3>
+                        Action Required: Inspection
+                    </h3>
+
+                    <div class="action-subtitle">
+                        Complete inspection before the roll can
+                        be released or rejected.
+                    </div>
+
+                    <div class="form-grid">
+
+                        <div class="form-group">
+
+                            <label>
+                                Inspection Operator *
+                            </label>
+
+                            <input
+                                type="text"
+                                id="inspectionOperator"
+                                placeholder="Enter operator name"
+                            >
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label>
+                                Inspection Supervisor *
+                            </label>
+
+                            <input
+                                type="text"
+                                id="inspectionSupervisor"
+                                placeholder="Enter supervisor name"
+                            >
+
+                        </div>
+
+
+                        <div class="form-group full-width">
+
+                            <label>
+                                Inspection Remarks
+                            </label>
+
+                            <textarea
+                                id="inspectionRemarks"
+                                placeholder="Enter inspection findings..."
+                            ></textarea>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="action-buttons">
+
+                        <button
+                            type="button"
+                            class="btn-primary"
+                            onclick="markInspectionDone()"
+                        >
+                            Mark Inspection Done
+                        </button>
+
+                    </div>
+
+                </section>
+            `;
+        }
+
+
+        if (
+            hold.status ===
+            "INSPECTION_DONE"
+        ) {
+
+            return `
+
+                <section class="action-panel">
+
+                    <h3>
+                        Action Required: Final Decision
+                    </h3>
+
+                    <div class="action-subtitle">
+                        Inspection is complete. Decide whether
+                        the roll should be released or rejected.
+                    </div>
+
+                    <div class="form-grid">
+
+                        <div class="form-group">
+
+                            <label>
+                                Supervisor *
+                            </label>
+
+                            <input
+                                type="text"
+                                id="releaseSupervisor"
+                                placeholder="Supervisor name"
+                            >
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label>
+                                Release Remarks
+                            </label>
+
+                            <input
+                                type="text"
+                                id="releaseRemarks"
+                                placeholder="Release remarks"
+                            >
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label>
+                                Reject Supervisor *
+                            </label>
+
+                            <input
+                                type="text"
+                                id="rejectSupervisor"
+                                placeholder="Supervisor name"
+                            >
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label>
+                                Rejection Reason *
+                            </label>
+
+                            <input
+                                type="text"
+                                id="rejectRemarks"
+                                placeholder="Reason for rejection"
+                            >
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="action-buttons">
+
+                        <button
+                            type="button"
+                            class="btn-success"
+                            onclick="releaseInspectionHold()"
+                        >
+                            Release for Production
+                        </button>
+
+                        <button
+                            type="button"
+                            class="btn-danger"
+                            onclick="rejectInspectionHold()"
+                        >
+                            Reject
+                        </button>
+
+                    </div>
+
+                </section>
+            `;
+        }
+    }
+
+
+    /* =====================================================
+       SHADE APPROVAL
+    ====================================================== */
+
+    if (
+        hold.workflowType ===
+        "shadeApproval"
+    ) {
+
+        const stage =
+            hold.currentStage;
+
+
+        if (
+            stage ===
+            "PRINTING_MANAGER"
+        ) {
+
+            return shadeApprovalPanel(
+                "PRINTING_MANAGER",
+                "Printing Manager"
+            );
+        }
+
+
+        if (
+            stage ===
+            "QC_MANAGER"
+        ) {
+
+            return shadeApprovalPanel(
+                "QC_MANAGER",
+                "QC Manager"
+            );
+        }
+
+
+        if (
+            stage === "GM"
+        ) {
+
+            return shadeApprovalPanel(
+                "GM",
+                "General Manager"
+            );
+        }
+    }
+
+
+    /* =====================================================
+       REVIEW
+    ====================================================== */
+
+    if (
+        hold.workflowType ===
+        "review"
+    ) {
+
+        return `
+
+            <section class="action-panel">
+
+                <h3>
+                    Action Required: Review
+                </h3>
+
+                <div class="action-subtitle">
+                    Review the GSM / Weight issue and decide
+                    whether the roll can be released.
+                </div>
+
+                <div class="form-grid">
+
+                    <div class="form-group">
+
+                        <label>
+                            Reviewer *
+                        </label>
+
+                        <input
+                            type="text"
+                            id="reviewPerson"
+                            placeholder="Enter reviewer name"
+                        >
+
+                    </div>
+
+
+                    <div class="form-group full-width">
+
+                        <label>
+                            Review Remarks
+                        </label>
+
+                        <textarea
+                            id="reviewRemarks"
+                            placeholder="Enter review remarks..."
+                        ></textarea>
+
+                    </div>
+
+                </div>
+
+
+                <div class="action-buttons">
+
+                    <button
+                        type="button"
+                        class="btn-success"
+                        onclick="submitReview('RELEASE')"
+                    >
+                        Approve & Release
+                    </button>
+
+                    <button
+                        type="button"
+                        class="btn-danger"
+                        onclick="submitReview('REJECT')"
+                    >
+                        Reject
+                    </button>
+
+                </div>
+
+            </section>
+        `;
+    }
+
+
+    return "";
+}
+
+
+/* =========================================================
+   SHADE APPROVAL PANEL
+========================================================= */
+
+function shadeApprovalPanel(
+    stage,
+    stageName
+) {
+
+    const nameId =
+        stage === "PRINTING_MANAGER"
+            ? "printingManagerName"
+            : stage === "QC_MANAGER"
+                ? "qcManagerName"
+                : "gmName";
+
+
+    const remarksId =
+        stage === "PRINTING_MANAGER"
+            ? "printingManagerRemarks"
+            : stage === "QC_MANAGER"
+                ? "qcManagerRemarks"
+                : "gmRemarks";
+
+
+    return `
+
+        <section class="action-panel">
 
             <h3>
-                Inspection Required
+                Shade Approval: ${escapeHtml(stageName)}
             </h3>
 
-            <div class="action-form">
+            <div class="action-subtitle">
+                Shade mismatch requires approval from
+                ${escapeHtml(stageName)}.
+            </div>
 
-                <label>
-                    Inspection Operator
+
+            <div class="form-grid">
+
+                <div class="form-group">
+
+                    <label>
+                        Name *
+                    </label>
+
                     <input
                         type="text"
-                        id="inspectionOperator"
-                        placeholder="Enter actual inspection operator"
+                        id="${nameId}"
+                        placeholder="Enter name"
                     >
-                </label>
 
-                <label>
-                    Supervisor
-                    <input
-                        type="text"
-                        id="inspectionSupervisor"
-                        placeholder="Enter supervisor name"
-                    >
-                </label>
+                </div>
 
-                <label>
-                    Remarks
+
+                <div class="form-group full-width">
+
+                    <label>
+                        Remarks
+                    </label>
+
                     <textarea
-                        id="inspectionRemarks"
-                        placeholder="Inspection remarks"
+                        id="${remarksId}"
+                        placeholder="Enter approval / rejection remarks..."
                     ></textarea>
-                </label>
+
+                </div>
+
+            </div>
+
+
+            <div class="action-buttons">
 
                 <button
                     type="button"
-                    class="primary-btn"
-                    onclick="markInspectionDone()"
+                    class="btn-success"
+                    onclick="submitShadeApproval(
+                        '${stage}',
+                        'APPROVE'
+                    )"
                 >
-                    MARK INSPECTION DONE
+                    Approve
+                </button>
+
+                <button
+                    type="button"
+                    class="btn-danger"
+                    onclick="submitShadeApproval(
+                        '${stage}',
+                        'REJECT'
+                    )"
+                >
+                    Reject
                 </button>
 
             </div>
 
-        `;
-    }
-
-
-    /* =================================================
-       AFTER INSPECTION
-    ================================================= */
-
-    else if (
-        hold.workflowType === "inspection" &&
-        hold.status === "INSPECTION_DONE"
-    ) {
-
-        html += `
-
-            <h3>
-                Inspection Completed
-            </h3>
-
-            <div class="action-form">
-
-                <label>
-                    Supervisor
-                    <input
-                        type="text"
-                        id="releaseSupervisor"
-                        placeholder="Enter supervisor name"
-                    >
-                </label>
-
-                <label>
-                    Remarks
-                    <textarea
-                        id="releaseRemarks"
-                        placeholder="Release remarks"
-                    ></textarea>
-                </label>
-
-                <div class="action-buttons">
-
-                    <button
-                        type="button"
-                        class="primary-btn"
-                        onclick="releaseInspectionHold()"
-                    >
-                        RELEASE FOR PRODUCTION
-                    </button>
-
-                    <button
-                        type="button"
-                        class="danger-btn"
-                        onclick="rejectInspectionHold()"
-                    >
-                        REJECT
-                    </button>
-
-                </div>
-
-                <label>
-                    Rejection Reason
-                    <textarea
-                        id="rejectRemarks"
-                        placeholder="Enter rejection reason if rejecting"
-                    ></textarea>
-                </label>
-
-                <label>
-                    Supervisor for Rejection
-                    <input
-                        type="text"
-                        id="rejectSupervisor"
-                        placeholder="Enter supervisor name"
-                    >
-                </label>
-
-            </div>
-
-        `;
-    }
-
-
-    /* =================================================
-       SHADE APPROVAL
-    ================================================= */
-
-    else if (
-        hold.workflowType === "shadeApproval"
-    ) {
-
-        if (
-            hold.currentStage ===
-            "PRINTING_MANAGER"
-        ) {
-
-            html += `
-
-                <h3>
-                    Printing Manager Approval
-                </h3>
-
-                <div class="action-form">
-
-                    <label>
-                        Printing Manager
-                        <input
-                            type="text"
-                            id="printingManagerName"
-                            placeholder="Enter name"
-                        >
-                    </label>
-
-                    <label>
-                        Remarks
-                        <textarea
-                            id="printingManagerRemarks"
-                            placeholder="Enter remarks"
-                        ></textarea>
-                    </label>
-
-                    <div class="action-buttons">
-
-                        <button
-                            type="button"
-                            class="primary-btn"
-                            onclick="submitShadeApproval('PRINTING_MANAGER','APPROVE')"
-                        >
-                            APPROVE
-                        </button>
-
-                        <button
-                            type="button"
-                            class="danger-btn"
-                            onclick="submitShadeApproval('PRINTING_MANAGER','REJECT')"
-                        >
-                            REJECT
-                        </button>
-
-                    </div>
-
-                </div>
-
-            `;
-        }
-
-
-        else if (
-            hold.currentStage ===
-            "QC_MANAGER"
-        ) {
-
-            html += `
-
-                <h3>
-                    QC Manager Approval
-                </h3>
-
-                <div class="action-form">
-
-                    <label>
-                        QC Manager
-                        <input
-                            type="text"
-                            id="qcManagerName"
-                            placeholder="Enter name"
-                        >
-                    </label>
-
-                    <label>
-                        Remarks
-                        <textarea
-                            id="qcManagerRemarks"
-                            placeholder="Enter remarks"
-                        ></textarea>
-                    </label>
-
-                    <div class="action-buttons">
-
-                        <button
-                            type="button"
-                            class="primary-btn"
-                            onclick="submitShadeApproval('QC_MANAGER','APPROVE')"
-                        >
-                            APPROVE
-                        </button>
-
-                        <button
-                            type="button"
-                            class="danger-btn"
-                            onclick="submitShadeApproval('QC_MANAGER','REJECT')"
-                        >
-                            REJECT
-                        </button>
-
-                    </div>
-
-                </div>
-
-            `;
-        }
-
-
-        else if (
-            hold.currentStage === "GM"
-        ) {
-
-            html += `
-
-                <h3>
-                    GM Approval
-                </h3>
-
-                <div class="action-form">
-
-                    <label>
-                        GM
-                        <input
-                            type="text"
-                            id="gmName"
-                            placeholder="Enter name"
-                        >
-                    </label>
-
-                    <label>
-                        Remarks
-                        <textarea
-                            id="gmRemarks"
-                            placeholder="Enter remarks"
-                        ></textarea>
-                    </label>
-
-                    <div class="action-buttons">
-
-                        <button
-                            type="button"
-                            class="primary-btn"
-                            onclick="submitShadeApproval('GM','APPROVE')"
-                        >
-                            RELEASE
-                        </button>
-
-                        <button
-                            type="button"
-                            class="danger-btn"
-                            onclick="submitShadeApproval('GM','REJECT')"
-                        >
-                            REJECT
-                        </button>
-
-                    </div>
-
-                </div>
-
-            `;
-        }
-    }
-
-
-    /* =================================================
-       GENERAL REVIEW
-    ================================================= */
-
-    else if (
-        hold.workflowType === "review" &&
-        hold.status === "REVIEW"
-    ) {
-
-        html += `
-
-            <h3>
-                Review Required
-            </h3>
-
-            <div class="action-form">
-
-                <label>
-                    Reviewer
-                    <input
-                        type="text"
-                        id="reviewPerson"
-                        placeholder="Enter reviewer name"
-                    >
-                </label>
-
-                <label>
-                    Remarks
-                    <textarea
-                        id="reviewRemarks"
-                        placeholder="Enter review remarks"
-                    ></textarea>
-                </label>
-
-                <div class="action-buttons">
-
-                    <button
-                        type="button"
-                        class="primary-btn"
-                        onclick="submitReview('RELEASE')"
-                    >
-                        RELEASE
-                    </button>
-
-                    <button
-                        type="button"
-                        class="danger-btn"
-                        onclick="submitReview('REJECT')"
-                    >
-                        REJECT
-                    </button>
-
-                </div>
-
-            </div>
-
-        `;
-    }
-
-
-    html += `
-
-        </div>
-
+        </section>
     `;
-
-
-    return html;
 }
 
 
-/* =====================================================
-   CREATE ACTIVE HOLD CARD
-===================================================== */
+/* =========================================================
+   TIMELINE
+========================================================= */
 
-function createHoldCard(hold) {
+function renderTimeline(actions) {
 
-    const age =
-        getHoldDuration(hold);
+    if (!actions) {
+
+        return `
+            <div class="empty-state">
+                No action history available.
+            </div>
+        `;
+    }
+
+
+    const actionArray =
+        Object.entries(actions)
+            .map(
+                ([id, action]) => ({
+                    id,
+                    ...action
+                })
+            )
+            .sort(
+                (a, b) =>
+                    Number(a.timestamp || 0) -
+                    Number(b.timestamp || 0)
+            );
+
+
+    if (!actionArray.length) {
+
+        return `
+            <div class="empty-state">
+                No action history available.
+            </div>
+        `;
+    }
+
+
+    return `
+
+        <div class="timeline">
+
+            ${actionArray
+                .map(
+                    action => `
+
+                        <div class="timeline-item">
+
+                            <strong>
+                                ${escapeHtml(
+                                    action.action ||
+                                    "ACTION"
+                                )}
+                            </strong>
+
+                            <p>
+                                ${
+                                    action.person
+                                        ? escapeHtml(
+                                            action.person
+                                        )
+                                        : ""
+                                }
+
+                                ${
+                                    action.person &&
+                                    action.remarks
+                                        ? " — "
+                                        : ""
+                                }
+
+                                ${
+                                    action.remarks
+                                        ? escapeHtml(
+                                            action.remarks
+                                        )
+                                        : ""
+                                }
+                            </p>
+
+                            <small>
+                                ${escapeHtml(
+                                    formatDateTime(
+                                        action.timestamp
+                                    )
+                                )}
+                            </small>
+
+                        </div>
+                    `
+                )
+                .join("")}
+
+        </div>
+    `;
+}
+
+
+/* =========================================================
+   HOLD CARD
+========================================================= */
+
+function createHoldCard(
+    hold
+) {
+
+    const ageClass =
+        getAgeClass(hold);
+
+    const actionText =
+        getWaitingActionText(
+            hold
+        );
+
+
+    return `
+
+        <article
+            class="hold-card ${ageClass}"
+        >
+
+            <div class="hold-card-header">
+
+                <div class="hold-card-title">
+
+                    <h3>
+                        Job:
+                        ${escapeHtml(
+                            hold.jobNo
+                        )}
+                        —
+                        Roll:
+                        ${escapeHtml(
+                            hold.rollNo
+                        )}
+                    </h3>
+
+                    <p>
+                        ${escapeHtml(
+                            hold.jobName ||
+                            "No Job Name"
+                        )}
+                    </p>
+
+                </div>
+
+
+                <span
+                    class="badge ${getBadgeClass(
+                        hold.status
+                    )}"
+                >
+                    ${escapeHtml(
+                        formatStatus(
+                            hold.status
+                        )
+                    )}
+                </span>
+
+            </div>
+
+
+            <div class="hold-details">
+
+                ${detailHtml(
+                    "Process",
+                    hold.process
+                )}
+
+                ${detailHtml(
+                    "Machine",
+                    hold.machine
+                )}
+
+                ${detailHtml(
+                    "Weight",
+                    hold.netWeight
+                        ? `${hold.netWeight} kg`
+                        : "-"
+                )}
+
+                ${detailHtml(
+                    "Reason",
+                    hold.holdReason
+                )}
+
+                ${detailHtml(
+                    "Age",
+                    formatDuration(
+                        getHoldDurationMs(
+                            hold
+                        )
+                    )
+                )}
+
+                ${detailHtml(
+                    "Stage",
+                    formatStage(
+                        hold.currentStage
+                    )
+                )}
+
+                ${detailHtml(
+                    "Production Date",
+                    hold.productionDate
+                )}
+
+                ${detailHtml(
+                    "Shift",
+                    hold.shift
+                )}
+
+                ${detailHtml(
+                    "QC Inspector",
+                    hold.qcInspector
+                )}
+
+                ${detailHtml(
+                    "Hold Time",
+                    formatDateTime(
+                        hold.holdTimestamp
+                    )
+                )}
+
+            </div>
+
+
+            <div class="hold-card-footer">
+
+                <div class="waiting-action">
+                    ${escapeHtml(
+                        actionText
+                    )}
+                </div>
+
+                <button
+                    type="button"
+                    class="view-details-btn"
+                    onclick="openDetails(
+                        '${escapeHtml(
+                            hold.holdId
+                        )}'
+                    )"
+                >
+                    View Details
+                </button>
+
+            </div>
+
+        </article>
+    `;
+}
+
+
+/* =========================================================
+   HISTORY CARD
+========================================================= */
+
+function createHistoryCard(
+    hold
+) {
 
     const ageClass =
         getAgeClass(hold);
 
 
-    const actionRequired =
-        requiresAction(hold);
-
-
     return `
 
-        <div
+        <article
             class="hold-card ${ageClass}"
-            data-hold-id="${escapeHtml(
-                hold.holdId
-            )}"
         >
 
             <div class="hold-card-header">
 
-                <div>
+                <div class="hold-card-title">
 
-                    <span class="hold-job">
+                    <h3>
+                        Job:
                         ${escapeHtml(
                             hold.jobNo
                         )}
-                    </span>
-
-                    <span class="hold-roll">
+                        —
                         Roll:
                         ${escapeHtml(
                             hold.rollNo
                         )}
-                    </span>
+                    </h3>
+
+                    <p>
+                        ${escapeHtml(
+                            hold.jobName ||
+                            "No Job Name"
+                        )}
+                    </p>
 
                 </div>
 
-                <span class="status-badge">
+
+                <span
+                    class="badge ${getBadgeClass(
+                        hold.status
+                    )}"
+                >
                     ${escapeHtml(
                         formatStatus(
                             hold.status
@@ -2638,371 +2733,197 @@ function createHoldCard(hold) {
             </div>
 
 
-            <div class="hold-card-body">
-
-                <div class="hold-info">
-
-                    <span>
-                        Job Name
-                    </span>
-
-                    <strong>
-                        ${escapeHtml(
-                            hold.jobName || "-"
-                        )}
-                    </strong>
-
-                </div>
-
-
-                <div class="hold-info">
-
-                    <span>
-                        Weight
-                    </span>
-
-                    <strong>
-                        ${Number(
-                            hold.netWeight || 0
-                        ).toFixed(2)}
-                        kg
-                    </strong>
-
-                </div>
-
-
-                <div class="hold-info">
-
-                    <span>
-                        Process
-                    </span>
-
-                    <strong>
-                        ${escapeHtml(
-                            hold.process || "-"
-                        )}
-                    </strong>
-
-                </div>
-
-
-                <div class="hold-info">
-
-                    <span>
-                        Machine
-                    </span>
-
-                    <strong>
-                        ${escapeHtml(
-                            hold.machine || "-"
-                        )}
-                    </strong>
-
-                </div>
-
-
-                <div class="hold-info">
-
-                    <span>
-                        Shift
-                    </span>
-
-                    <strong>
-                        ${escapeHtml(
-                            hold.shift || "-"
-                        )}
-                    </strong>
-
-                </div>
-
-
-                <div class="hold-info">
-
-                    <span>
-                        QC Inspector
-                    </span>
-
-                    <strong>
-                        ${escapeHtml(
-                            hold.qcInspector || "-"
-                        )}
-                    </strong>
-
-                </div>
-
-
-                <div class="hold-info">
-
-                    <span>
-                        Hold Reason
-                    </span>
-
-                    <strong>
-                        ${escapeHtml(
-                            hold.holdReason || "-"
-                        )}
-                    </strong>
-
-                </div>
-
-
-                <div class="hold-info">
-
-                    <span>
-                        Waiting For
-                    </span>
-
-                    <strong>
-                        ${escapeHtml(
-                            formatStage(
-                                hold.currentStage
-                            )
-                        )}
-                    </strong>
-
-                </div>
-
-
-                <div class="hold-age ${ageClass}">
-
-                    <span>
-                        Hold Age
-                    </span>
-
-                    <strong>
-                        ${age.text}
-                    </strong>
-
-                </div>
-
-            </div>
-
-
-            <div class="hold-card-footer">
-
-                <span>
-                    Held:
-                    ${formatDateTime(
-                        hold.holdTimestamp
-                    )}
-                </span>
-
-                <button
-                    type="button"
-                    class="primary-btn small-btn"
-                    onclick="openDetails('${escapeHtml(
-                        hold.holdId
-                    )}')"
-                >
-                    VIEW DETAILS
-                </button>
-
-            </div>
-
-        </div>
-
-    `;
-}
-
-
-/* =====================================================
-   HISTORY CARD
-===================================================== */
-
-function createHistoryCard(hold) {
-
-    const duration =
-        getHoldDuration(hold);
-
-
-    return `
-
-        <div class="hold-card history-card">
-
-            <div class="hold-card-header">
-
-                <div>
-
-                    <span class="hold-job">
-                        ${escapeHtml(
-                            hold.jobNo
-                        )}
-                    </span>
-
-                    <span class="hold-roll">
-                        Roll:
-                        ${escapeHtml(
-                            hold.rollNo
-                        )}
-                    </span>
-
-                </div>
-
-                <span class="status-badge">
-                    ${escapeHtml(
-                        formatStatus(
-                            hold.status
+            <div class="hold-details">
+
+                ${detailHtml(
+                    "Process",
+                    hold.process
+                )}
+
+                ${detailHtml(
+                    "Machine",
+                    hold.machine
+                )}
+
+                ${detailHtml(
+                    "Weight",
+                    hold.netWeight
+                        ? `${hold.netWeight} kg`
+                        : "-"
+                )}
+
+                ${detailHtml(
+                    "Reason",
+                    hold.holdReason
+                )}
+
+                ${detailHtml(
+                    "Duration",
+                    formatDuration(
+                        getHoldDurationMs(
+                            hold
                         )
-                    )}
-                </span>
+                    )
+                )}
 
-            </div>
-
-
-            <div class="hold-card-body">
-
-                <div class="hold-info">
-
-                    <span>
-                        Job Name
-                    </span>
-
-                    <strong>
-                        ${escapeHtml(
-                            hold.jobName || "-"
-                        )}
-                    </strong>
-
-                </div>
-
-
-                <div class="hold-info">
-
-                    <span>
-                        Weight
-                    </span>
-
-                    <strong>
-                        ${Number(
-                            hold.netWeight || 0
-                        ).toFixed(2)}
-                        kg
-                    </strong>
-
-                </div>
-
-
-                <div class="hold-info">
-
-                    <span>
-                        Process
-                    </span>
-
-                    <strong>
-                        ${escapeHtml(
-                            hold.process || "-"
-                        )}
-                    </strong>
-
-                </div>
-
-
-                <div class="hold-info">
-
-                    <span>
-                        Hold Reason
-                    </span>
-
-                    <strong>
-                        ${escapeHtml(
-                            hold.holdReason || "-"
-                        )}
-                    </strong>
-
-                </div>
-
-
-                <div class="hold-info">
-
-                    <span>
-                        Total Hold Time
-                    </span>
-
-                    <strong>
-                        ${duration.text}
-                    </strong>
-
-                </div>
-
-
-                <div class="hold-info">
-
-                    <span>
-                        Closed
-                    </span>
-
-                    <strong>
-                        ${formatDateTime(
-                            hold.releaseTimestamp
-                        )}
-                    </strong>
-
-                </div>
+                ${detailHtml(
+                    "Closed",
+                    formatDateTime(
+                        hold.releaseTimestamp
+                    )
+                )}
 
             </div>
 
 
             <div class="hold-card-footer">
 
+                <div class="waiting-action">
+
+                    ${
+                        hold.status ===
+                        "RELEASED"
+                            ? "Released for production"
+                            : "Roll rejected"
+                    }
+
+                </div>
+
+
                 <button
                     type="button"
-                    class="primary-btn small-btn"
-                    onclick="openDetails('${escapeHtml(
-                        hold.holdId
-                    )}')"
+                    class="view-details-btn"
+                    onclick="openDetails(
+                        '${escapeHtml(
+                            hold.holdId
+                        )}'
+                    )"
                 >
-                    VIEW DETAILS
+                    View Details
                 </button>
 
             </div>
 
-        </div>
-
+        </article>
     `;
 }
 
 
-/* =====================================================
+/* =========================================================
+   WAITING ACTION
+========================================================= */
+
+function getWaitingActionText(
+    hold
+) {
+
+    if (
+        hold.status ===
+        "RELEASED"
+    ) {
+
+        return "Released";
+    }
+
+
+    if (
+        hold.status ===
+        "REJECTED"
+    ) {
+
+        return "Rejected";
+    }
+
+
+    if (
+        hold.workflowType ===
+        "inspection"
+    ) {
+
+        if (
+            hold.status ===
+            "HOLD"
+        ) {
+
+            return "Inspection required";
+        }
+
+        if (
+            hold.status ===
+            "INSPECTION_DONE"
+        ) {
+
+            return "Final decision required";
+        }
+    }
+
+
+    if (
+        hold.workflowType ===
+        "shadeApproval"
+    ) {
+
+        return (
+            "Waiting for " +
+            formatStage(
+                hold.currentStage
+            )
+        );
+    }
+
+
+    if (
+        hold.workflowType ===
+        "review"
+    ) {
+
+        return "Review required";
+    }
+
+
+    return "Action required";
+}
+
+
+/* =========================================================
    FILTER MATCH
-===================================================== */
+========================================================= */
 
-function matchesFilters(hold) {
+function matchesFilters(
+    hold
+) {
 
     const search =
-        searchInput
-            ? searchInput.value
-                .trim()
-                .toLowerCase()
-            : "";
+        (
+            searchInput?.value ||
+            ""
+        )
+            .trim()
+            .toLowerCase();
 
 
     const process =
-        processFilter
-            ? processFilter.value
-            : "";
-
+        processFilter?.value ||
+        "";
 
     const status =
-        statusFilter
-            ? statusFilter.value
-            : "";
-
+        statusFilter?.value ||
+        "";
 
     const reason =
-        reasonFilter
-            ? reasonFilter.value
-            : "";
+        reasonFilter?.value ||
+        "";
 
 
     if (search) {
 
-        const searchableText = [
+        const searchable = [
 
             hold.jobNo,
 
-            hold.rollNo,
-
             hold.jobName,
+
+            hold.rollNo,
 
             hold.process,
 
@@ -3014,15 +2935,18 @@ function matchesFilters(hold) {
 
             hold.qcInspector,
 
-            hold.holdReason
+            hold.holdReason,
+
+            hold.observation
 
         ]
+            .filter(Boolean)
             .join(" ")
             .toLowerCase();
 
 
         if (
-            !searchableText.includes(
+            !searchable.includes(
                 search
             )
         ) {
@@ -3034,7 +2958,6 @@ function matchesFilters(hold) {
 
     if (
         process &&
-        process !== "ALL" &&
         hold.process !== process
     ) {
 
@@ -3044,7 +2967,6 @@ function matchesFilters(hold) {
 
     if (
         status &&
-        status !== "ALL" &&
         hold.status !== status
     ) {
 
@@ -3054,7 +2976,6 @@ function matchesFilters(hold) {
 
     if (
         reason &&
-        reason !== "ALL" &&
         hold.holdReason !== reason
     ) {
 
@@ -3066,13 +2987,15 @@ function matchesFilters(hold) {
 }
 
 
-/* =====================================================
-   SORT HOLDS
-===================================================== */
+/* =========================================================
+   SORT
+========================================================= */
 
-function sortHoldsDescending(list) {
+function sortHoldsDescending(
+    list
+) {
 
-    return [...list].sort(
+    return list.sort(
         (a, b) =>
             Number(
                 b.holdTimestamp || 0
@@ -3084,9 +3007,22 @@ function sortHoldsDescending(list) {
 }
 
 
-/* =====================================================
+/* =========================================================
+   GET HOLD ARRAY
+========================================================= */
+
+function getHoldArray() {
+
+    return Object.values(
+        holds || {}
+    )
+        .filter(Boolean);
+}
+
+
+/* =========================================================
    RENDER ACTIVE HOLDS
-===================================================== */
+========================================================= */
 
 function renderActiveHolds() {
 
@@ -3095,40 +3031,39 @@ function renderActiveHolds() {
     }
 
 
-    const active =
-        Object.values(holds)
+    let active =
+        getHoldArray()
             .filter(
                 hold =>
-                    hold.status !== "RELEASED" &&
-                    hold.status !== "REJECTED"
+                    hold.status !==
+                        "RELEASED" &&
+                    hold.status !==
+                        "REJECTED"
             )
             .filter(
                 matchesFilters
             );
 
 
-    const sorted =
+    active =
         sortHoldsDescending(
             active
         );
 
 
-    if (sorted.length === 0) {
+    if (!active.length) {
 
         holdList.innerHTML = `
 
             <div class="empty-state">
 
-                <h3>
-                    No Active Holds
-                </h3>
-
-                <p>
-                    There are currently no QC hold rolls matching your filters.
-                </p>
+                ${
+                    getHoldArray().length
+                        ? "No active holds match the selected filters."
+                        : "No active QC holds."
+                }
 
             </div>
-
         `;
 
         return;
@@ -3136,7 +3071,7 @@ function renderActiveHolds() {
 
 
     holdList.innerHTML =
-        sorted
+        active
             .map(
                 createHoldCard
             )
@@ -3144,9 +3079,9 @@ function renderActiveHolds() {
 }
 
 
-/* =====================================================
+/* =========================================================
    RENDER HISTORY
-===================================================== */
+========================================================= */
 
 function renderHistory() {
 
@@ -3155,50 +3090,45 @@ function renderHistory() {
     }
 
 
-    const history =
-        Object.values(holds)
+    let history =
+        getHoldArray()
             .filter(
                 hold =>
-                    hold.status === "RELEASED" ||
-                    hold.status === "REJECTED"
+                    hold.status ===
+                        "RELEASED" ||
+                    hold.status ===
+                        "REJECTED"
             )
             .filter(
                 matchesFilters
+            )
+            .sort(
+                (a, b) =>
+                    Number(
+                        b.releaseTimestamp ||
+                        b.updatedAt ||
+                        b.holdTimestamp ||
+                        0
+                    ) -
+                    Number(
+                        a.releaseTimestamp ||
+                        a.updatedAt ||
+                        a.holdTimestamp ||
+                        0
+                    )
             );
 
 
-    const sorted =
-        [...history].sort(
-            (a, b) =>
-                Number(
-                    b.releaseTimestamp ||
-                    b.holdTimestamp ||
-                    0
-                ) -
-                Number(
-                    a.releaseTimestamp ||
-                    a.holdTimestamp ||
-                    0
-                )
-        );
-
-
-    if (sorted.length === 0) {
+    if (!history.length) {
 
         historyList.innerHTML = `
 
             <div class="empty-state">
 
-                <h3>
-                    No History
-                </h3>
-
-                <p>
-                    No released or rejected rolls found.
-                </p>
+                No released or rejected
+                rolls found.
 
             </div>
-
         `;
 
         return;
@@ -3206,7 +3136,7 @@ function renderHistory() {
 
 
     historyList.innerHTML =
-        sorted
+        history
             .map(
                 createHistoryCard
             )
@@ -3214,52 +3144,51 @@ function renderHistory() {
 }
 
 
-/* =====================================================
+/* =========================================================
    SUMMARY
-===================================================== */
+========================================================= */
 
 function updateSummary() {
 
     const all =
-        Object.values(holds);
+        getHoldArray();
 
 
     const active =
         all.filter(
             hold =>
-                hold.status !== "RELEASED" &&
-                hold.status !== "REJECTED"
+                hold.status !==
+                    "RELEASED" &&
+                hold.status !==
+                    "REJECTED"
         );
 
 
-    const closed =
+    const released =
         all.filter(
             hold =>
-                hold.status === "RELEASED"
-        );
-
-
-    const actionRequired =
-        active.filter(
-            requiresAction
+                hold.status ===
+                "RELEASED"
         );
 
 
     const over24 =
         active.filter(
             hold =>
-                getHoldDuration(
+                getHoldDurationMs(
                     hold
-                ).hours >= 24
+                ) >=
+                24 * 60 * 60 * 1000
         );
 
 
     const over48 =
         active.filter(
             hold =>
-                getHoldDuration(
+                getHoldDurationMs(
                     hold
-                ).hours >= 48
+                ) >=
+                48 * 60 * 60 * 1000
         );
 
 
@@ -3270,64 +3199,40 @@ function updateSummary() {
                 hold
             ) =>
                 total +
-                Number(
-                    hold.netWeight || 0
+                (
+                    Number(
+                        hold.netWeight
+                    ) || 0
                 ),
             0
         );
 
 
-    if (activeHoldsElement) {
+    activeHoldsEl.textContent =
+        active.length;
 
-        activeHoldsElement.textContent =
-            active.length;
-    }
+    actionRequiredEl.textContent =
+        active.filter(
+            requiresAction
+        ).length;
 
+    over24El.textContent =
+        over24.length;
 
-    if (actionRequiredElement) {
+    over48El.textContent =
+        over48.length;
 
-        actionRequiredElement.textContent =
-            actionRequired.length;
-    }
+    releasedEl.textContent =
+        released.length;
 
-
-    if (over24Element) {
-
-        over24Element.textContent =
-            over24.length;
-    }
-
-
-    if (over48Element) {
-
-        over48Element.textContent =
-            over48.length;
-    }
-
-
-    if (releasedElement) {
-
-        releasedElement.textContent =
-            closed.length;
-    }
-
-
-    if (totalWeightElement) {
-
-        /* FIX:
-           HTML already contains "kg",
-           so JS must NOT add kg again.
-        */
-
-        totalWeightElement.textContent =
-            totalWeight.toFixed(2);
-    }
+    totalWeightEl.textContent =
+        `${totalWeight.toFixed(2)} kg`;
 }
 
 
-/* =====================================================
-   RENDER EVERYTHING
-===================================================== */
+/* =========================================================
+   RENDER ALL
+========================================================= */
 
 function renderAll() {
 
@@ -3338,111 +3243,69 @@ function renderAll() {
     renderHistory();
 
 
-    /* Refresh currently opened details modal */
+    if (
+        currentHoldId &&
+        holds[currentHoldId] &&
+        !detailsModal.classList.contains(
+            "hidden"
+        )
+    ) {
 
-    if (currentHoldId) {
-
-        const currentHold =
-            holds[currentHoldId];
-
-        if (currentHold) {
-
-            renderDetailsModal(
-                currentHold
-            );
-        }
+        renderDetailsModal(
+            holds[currentHoldId]
+        );
     }
 }
 
 
-/* =====================================================
-   TAB SWITCHING
-===================================================== */
+/* =========================================================
+   TAB SWITCH
+========================================================= */
 
-function switchTab(tabName) {
+function switchTab(
+    tabName
+) {
 
     currentTab =
         tabName;
 
 
-    tabButtons.forEach(
-        button => {
+    document
+        .querySelectorAll(
+            ".tabs .tab"
+        )
+        .forEach(
+            tab => {
 
-            button.classList.toggle(
-                "active",
-                button.dataset.tab === tabName
-            );
-        }
-    );
-
-
-    const activeSection =
-        document.querySelector(
-            '[data-tab-content="active"]'
-        );
-
-    const historySection =
-        document.querySelector(
-            '[data-tab-content="history"]'
+                tab.classList.toggle(
+                    "active",
+                    tab.dataset.tab ===
+                        tabName
+                );
+            }
         );
 
 
-    if (activeSection) {
+    document
+        .querySelectorAll(
+            "[data-tab-content]"
+        )
+        .forEach(
+            section => {
 
-        activeSection.style.display =
-            tabName === "active"
-                ? ""
-                : "none";
-    }
-
-
-    if (historySection) {
-
-        historySection.style.display =
-            tabName === "history"
-                ? ""
-                : "none";
-    }
-
-
-    /* Support common IDs if they exist */
-
-    const activeTabContent =
-        document.getElementById(
-            "activeTabContent"
+                section.classList.toggle(
+                    "hidden",
+                    section.dataset.tabContent !==
+                        tabName
+                );
+            }
         );
-
-    const historyTabContent =
-        document.getElementById(
-            "historyTabContent"
-        );
-
-
-    if (activeTabContent) {
-
-        activeTabContent.style.display =
-            tabName === "active"
-                ? ""
-                : "none";
-    }
-
-
-    if (historyTabContent) {
-
-        historyTabContent.style.display =
-            tabName === "history"
-                ? ""
-                : "none";
-    }
-
-
-    renderAll();
 }
 
 
-/* =====================================================
-   LOAD FIREBASE DATA
-===================================================== */
+/* =========================================================
+   LOAD HOLDS
+========================================================= */
 
 function loadHolds() {
 
@@ -3457,17 +3320,13 @@ function loadHolds() {
         holdsRef,
         snapshot => {
 
-            const data =
-                snapshot.val();
-
-
             holds =
-                data || {};
-
+                snapshot.val() ||
+                {};
 
             renderAll();
-        },
 
+        },
         error => {
 
             console.error(
@@ -3475,168 +3334,135 @@ function loadHolds() {
                 error
             );
 
+            holdList.innerHTML = `
 
-            if (holdList) {
+                <div class="empty-state">
 
-                holdList.innerHTML = `
+                    Unable to load QC hold data.
 
-                    <div class="empty-state">
+                    <br><br>
 
-                        <h3>
-                            Database Error
-                        </h3>
+                    Check Firebase configuration
+                    and database rules.
 
-                        <p>
-                            Unable to load QC hold data.
-                        </p>
-
-                    </div>
-
-                `;
-            }
+                </div>
+            `;
         }
     );
 }
 
 
-/* =====================================================
+/* =========================================================
    EVENT LISTENERS
-===================================================== */
+========================================================= */
 
-
-/* Add Hold */
-
-if (addHoldBtn) {
-
-    addHoldBtn.addEventListener(
-        "click",
-        openAddHoldModal
-    );
-}
-
-
-/* Add Hold X */
-
-if (closeModalBtn) {
-
-    closeModalBtn.addEventListener(
-        "click",
-        closeAddHoldModal
-    );
-}
-
-
-/* Add Hold Cancel */
-
-if (cancelHoldBtn) {
-
-    cancelHoldBtn.addEventListener(
-        "click",
-        closeAddHoldModal
-    );
-}
-
-
-/* Details X */
-
-if (closeDetailsBtn) {
-
-    closeDetailsBtn.addEventListener(
-        "click",
-        closeDetailsModal
-    );
-}
-
-
-/* Form */
-
-if (holdForm) {
-
-    holdForm.addEventListener(
-        "submit",
-        createHold
-    );
-}
-
-
-/* Tabs */
-
-tabButtons.forEach(
-    button => {
-
-        button.addEventListener(
-            "click",
-            () => {
-
-                switchTab(
-                    button.dataset.tab
-                );
-            }
-        );
-    }
+addHoldBtn.addEventListener(
+    "click",
+    openAddHoldModal
 );
 
 
-/* Search */
+closeAddHold.addEventListener(
+    "click",
+    closeAddHoldModal
+);
 
-if (searchInput) {
 
-    searchInput.addEventListener(
-        "input",
-        renderAll
+cancelHold.addEventListener(
+    "click",
+    closeAddHoldModal
+);
+
+
+closeDetails.addEventListener(
+    "click",
+    closeDetailsModal
+);
+
+
+holdForm.addEventListener(
+    "submit",
+    createHold
+);
+
+
+/* TABS */
+
+document
+    .querySelectorAll(
+        ".tabs .tab"
+    )
+    .forEach(
+        tab => {
+
+            tab.addEventListener(
+                "click",
+                () => {
+
+                    switchTab(
+                        tab.dataset.tab
+                    );
+
+                }
+            );
+
+        }
     );
-}
 
 
-/* Filters */
+/* FILTERS */
 
-if (processFilter) {
+[
+    searchInput,
+    processFilter,
+    statusFilter,
+    reasonFilter
+]
+    .forEach(
+        element => {
 
-    processFilter.addEventListener(
-        "change",
-        renderAll
+            if (!element) {
+                return;
+            }
+
+            element.addEventListener(
+                "input",
+                renderAll
+            );
+
+            element.addEventListener(
+                "change",
+                renderAll
+            );
+
+        }
     );
-}
 
 
-if (statusFilter) {
+/* MODAL BACKGROUND CLICK */
 
-    statusFilter.addEventListener(
-        "change",
-        renderAll
-    );
-}
-
-
-if (reasonFilter) {
-
-    reasonFilter.addEventListener(
-        "change",
-        renderAll
-    );
-}
-
-
-/* =====================================================
-   BACKGROUND CLICK CLOSE
-===================================================== */
-
-window.addEventListener(
+addHoldModal.addEventListener(
     "click",
     event => {
 
         if (
-            addHoldModal &&
-            event.target === addHoldModal
+            event.target ===
+            addHoldModal
         ) {
 
             closeAddHoldModal();
         }
+    }
+);
 
+
+detailsModal.addEventListener(
+    "click",
+    event => {
 
         if (
-            detailsModal &&
-            event.target === detailsModal
+            event.target ===
+            detailsModal
         ) {
 
             closeDetailsModal();
@@ -3645,54 +3471,82 @@ window.addEventListener(
 );
 
 
-/* =====================================================
-   ESCAPE KEY
-===================================================== */
+/* ESCAPE */
 
-window.addEventListener(
+document.addEventListener(
     "keydown",
     event => {
 
         if (
-            event.key !== "Escape"
+            event.key !==
+            "Escape"
         ) {
+            return;
+        }
+
+
+        if (
+            !addHoldModal.classList.contains(
+                "hidden"
+            )
+        ) {
+
+            closeAddHoldModal();
 
             return;
         }
 
 
-        closeAddHoldModal();
+        if (
+            !detailsModal.classList.contains(
+                "hidden"
+            )
+        ) {
 
-        closeDetailsModal();
+            closeDetailsModal();
+        }
     }
 );
 
 
-/* =====================================================
+/* =========================================================
    LIVE AGE REFRESH
-===================================================== */
+========================================================= */
 
 setInterval(
     () => {
 
         updateSummary();
 
-        renderActiveHolds();
+        if (
+            currentTab ===
+            "active"
+        ) {
 
-        renderHistory();
+            renderActiveHolds();
+
+        }
+
+        if (
+            currentTab ===
+            "history"
+        ) {
+
+            renderHistory();
+        }
 
 
-        if (currentHoldId) {
+        if (
+            currentHoldId &&
+            !detailsModal.classList.contains(
+                "hidden"
+            ) &&
+            holds[currentHoldId]
+        ) {
 
-            const currentHold =
-                holds[currentHoldId];
-
-            if (currentHold) {
-
-                renderDetailsModal(
-                    currentHold
-                );
-            }
+            renderDetailsModal(
+                holds[currentHoldId]
+            );
         }
 
     },
@@ -3700,9 +3554,9 @@ setInterval(
 );
 
 
-/* =====================================================
+/* =========================================================
    START APPLICATION
-===================================================== */
+========================================================= */
 
 loadHolds();
 
@@ -3710,5 +3564,5 @@ renderAll();
 
 
 console.log(
-    "Apex QC Hold Roll Monitor loaded successfully."
+    "APEX QC HOLD ROLL MONITOR loaded successfully."
 );
