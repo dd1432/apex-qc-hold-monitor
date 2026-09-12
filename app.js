@@ -548,11 +548,9 @@ holdForm.addEventListener(
                 holdData
             );
 
-
-            alert(
-                `Hold created successfully.\n\nJob: ${jobNo}\nRoll: ${rollNo}`
-            );
-
+alert(
+    `Hold created successfully.\n\nJob: ${jobNo}\nRoll: ${rollNo}`
+);
 
             closeAddHoldModal();
 
@@ -590,8 +588,7 @@ function loadHolds() {
 
     const holdsRef =
         ref(
-            db,
-            "holdRolls"
+            db,"holdRolls"
         );
 
 
