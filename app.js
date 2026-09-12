@@ -449,7 +449,7 @@ holdForm.addEventListener(
                 push(
                     ref(
                         db,
-                        `holdRolls/${holdId}/actions`
+                        "holdRolls/${holdId}/actions"
                     )
                 );
 
