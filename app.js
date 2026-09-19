@@ -1,17 +1,33 @@
 /* =========================================================
    APEX QC HOLD ROLL MONITOR - APP LOGIC
-========================================================= */
+   ========================================================= */
 
 // --- GLOBAL STATE ---
 let holds = {};
 let currentHoldId = null;
 
-// --- DOM ELEMENTS ---
-const holdList = document.getElementById("holdList");
-const historyList = document.getElementById("historyList");
-const addHoldBtn = document.getElementById("addHoldBtn");
-const addHoldModal = document.getElementById("addHoldModal");
-const closeAddHold = document.getElementById("closeAddHold");
+// --- FIREBASE INITIALIZATION & DB REFERENCE ---
+// Note: Ensure Firebase compat scripts are loaded in index.html before this file:
+// https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js
+// https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBVdV7BKtw1lBexUBSM90l2gRmg2vNE7RY",
+  authDomain: "apex-production-report-90e12.firebaseapp.com",
+  databaseURL: "https://apex-production-report-90e12-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "apex-production-report-90e12",
+  storageBucket: "apex-production-report-90e12.firebasestorage.app",
+  messagingSenderId: "857344599590",
+  appId: "1:857344599590:web:d002e55d68d896afe0e8e7"
+};
+
+// Initialize Firebase if not already initialized
+if (!firebase.apps.length) {
+    firebase.initializeApp(firebaseConfig);
+}
+
+const db = firebase.database();
+const holdsRef = db.ref("holds");
 
 /* =========================================================
    INITIALIZATION & EVENT LISTENERS
@@ -21,22 +37,22 @@ document.addEventListener("DOMContentLoaded", () => {
     setupTabs();
     setupModals();
     setupFilters();
+    setupHoldForm();
+    initFirebaseListener();
 });
 
-/**
- * Firebase Realtime Database Listener
- * Make sure Firebase DB is initialized prior to this script.
- */
-if (typeof holdsRef !== "undefined") {
-    onValue(holdsRef, (snapshot) => {
+function initFirebaseListener() {
+    holdsRef.on("value", (snapshot) => {
         holds = snapshot.val() || {};
         renderDashboard();
         openHoldFromUrl();
+    }, (error) => {
+        console.error("Firebase Database Read Error:", error);
     });
 }
 
 /* =========================================================
-   HELPER / FORMATTING FUNCTIONS
+   HELPER & FORMATTING FUNCTIONS
 ========================================================= */
 
 function formatStatus(status) {
@@ -45,11 +61,11 @@ function formatStatus(status) {
         "hold": "ON HOLD",
         "released": "RELEASED",
         "rejected": "REJECTED",
-        "INSPECTION_DONE": "INSPECTION DONE",
-        "SHADE_APPROVAL": "SHADE APPROVAL",
-        "REVIEW": "REVIEW"
+        "inspection_done": "INSPECTION DONE",
+        "shade_approval": "SHADE APPROVAL",
+        "review": "REVIEW"
     };
-    return statusMap[status] || status.toUpperCase();
+    return statusMap[status.toLowerCase()] || status.toUpperCase();
 }
 
 function formatStage(stage) {
@@ -60,7 +76,7 @@ function formatStage(stage) {
         "shade_approval": "Shade Approval Required",
         "completed": "Completed"
     };
-    return stageMap[stage] || stage;
+    return stageMap[stage.toLowerCase()] || stage;
 }
 
 function formatDateTime(timestamp) {
@@ -89,14 +105,13 @@ function formatDuration(ms) {
     const days = Math.floor(hours / 24);
     
     if (days > 0) {
-        const remainingHours = hours % 24;
-        return `${days}d ${remainingHours}h ${minutes}m`;
+        return `${days}d ${hours % 24}h ${minutes}m`;
     }
     return `${hours}h ${minutes}m`;
 }
 
 /* =========================================================
-   DASHBOARD, TABS & SUMMARY CARDS
+   DASHBOARD & TABS
 ========================================================= */
 
 function setupTabs() {
@@ -134,7 +149,9 @@ function updateSummaryCards() {
     let totalWeight = 0;
 
     Object.values(holds).forEach(hold => {
-        if (hold.status === "hold" || hold.status === "HOLD") {
+        const status = (hold.status || "").toLowerCase();
+
+        if (status === "hold") {
             activeHoldsCount++;
             totalWeight += Number(hold.netWeight) || 0;
 
@@ -145,10 +162,11 @@ function updateSummaryCards() {
                 over24Count++;
             }
 
-            if (hold.currentStage === "inspection" || hold.currentStage === "review") {
+            const stage = (hold.currentStage || "").toLowerCase();
+            if (stage === "inspection" || stage === "review") {
                 actionRequiredCount++;
             }
-        } else if (hold.status === "released" || hold.status === "RELEASED") {
+        } else if (status === "released") {
             releasedCount++;
         }
     });
@@ -169,15 +187,16 @@ function updateSummaryCards() {
 }
 
 /* =========================================================
-   HOLD CARDS RENDERING
+   LIST RENDERING
 ========================================================= */
 
 function renderHoldList() {
+    const holdList = document.getElementById("holdList");
     if (!holdList) return;
     holdList.innerHTML = "";
 
     const activeHolds = Object.entries(holds)
-        .filter(([_, hold]) => hold.status === "hold" || hold.status === "HOLD")
+        .filter(([_, hold]) => (hold.status || "").toLowerCase() === "hold")
         .sort((a, b) => (b[1].holdTimestamp || 0) - (a[1].holdTimestamp || 0));
 
     if (activeHolds.length === 0) {
@@ -234,11 +253,12 @@ function renderHoldList() {
 }
 
 function renderHistoryList() {
+    const historyList = document.getElementById("historyList");
     if (!historyList) return;
     historyList.innerHTML = "";
 
     const historyHolds = Object.entries(holds)
-        .filter(([_, hold]) => hold.status !== "hold" && hold.status !== "HOLD")
+        .filter(([_, hold]) => (hold.status || "").toLowerCase() !== "hold")
         .sort((a, b) => (b[1].closedTimestamp || 0) - (a[1].closedTimestamp || 0));
 
     if (historyHolds.length === 0) {
@@ -247,7 +267,7 @@ function renderHistoryList() {
     }
 
     historyHolds.forEach(([id, hold]) => {
-        const isReleased = hold.status === "released" || hold.status === "RELEASED";
+        const isReleased = (hold.status || "").toLowerCase() === "released";
         const badgeClass = isReleased ? "badge-released" : "badge-rejected";
         
         const card = document.createElement("div");
@@ -288,32 +308,66 @@ function renderHistoryList() {
 }
 
 /* =========================================================
-   MODALS CONTROL
+   MODAL CONTROL & ACCESSIBILITY FIXES
 ========================================================= */
 
 function setupModals() {
-    if (addHoldBtn && addHoldModal) {
+    const addHoldBtn = document.getElementById("addHoldBtn");
+    const closeAddHold = document.getElementById("closeAddHold");
+    const cancelHold = document.getElementById("cancelHold");
+
+    if (addHoldBtn) {
         addHoldBtn.addEventListener("click", () => openModal("addHoldModal"));
     }
-    if (closeAddHold && addHoldModal) {
-        closeAddHold.addEventListener("click", () => closeModal("addHoldModal"));
+    
+    if (closeAddHold) {
+        closeAddHold.addEventListener("click", () => closeModal("addHoldModal", addHoldBtn));
+    }
+
+    if (cancelHold) {
+        cancelHold.addEventListener("click", () => closeModal("addHoldModal", addHoldBtn));
+    }
+
+    const closeDetails = document.getElementById("closeDetails");
+    if (closeDetails) {
+        closeDetails.addEventListener("click", () => closeModal("detailsModal"));
     }
 }
 
 function openModal(modalId) {
     const modal = document.getElementById(modalId);
-    if (modal) {
-        modal.classList.remove("hidden");
-        document.body.classList.add("modal-open");
+    if (!modal) return;
+
+    modal.classList.remove("hidden");
+    modal.removeAttribute("aria-hidden");
+    modal.removeAttribute("inert");
+
+    const focusTarget = modal.querySelector("input, select, textarea, button");
+    if (focusTarget) {
+        setTimeout(() => focusTarget.focus(), 50);
     }
 }
 
-function closeModal(modalId) {
+function closeModal(modalId, returnFocusElement = null) {
     const modal = document.getElementById(modalId);
-    if (modal) {
-        modal.classList.add("hidden");
-        document.body.classList.remove("modal-open");
+    if (!modal) return;
+
+    // 1. Remove focus from element inside modal before hiding it
+    if (document.activeElement && modal.contains(document.activeElement)) {
+        document.activeElement.blur();
     }
+
+    // 2. Return focus back to trigger button or main body
+    if (returnFocusElement && typeof returnFocusElement.focus === "function") {
+        returnFocusElement.focus();
+    } else {
+        document.body.focus();
+    }
+
+    // 3. Apply hiding and accessibility attributes
+    modal.classList.add("hidden");
+    modal.setAttribute("aria-hidden", "true");
+    modal.setAttribute("inert", "");
 }
 
 function openDetails(holdId) {
@@ -334,6 +388,43 @@ function openDetails(holdId) {
     if (detailStage) detailStage.textContent = formatStage(hold.currentStage);
 
     openModal("detailsModal");
+}
+
+/* =========================================================
+   FORM SUBMISSION & DATABASE WRITE
+========================================================= */
+
+function setupHoldForm() {
+    const holdForm = document.getElementById("holdForm");
+    if (!holdForm) return;
+
+    holdForm.addEventListener("submit", (e) => {
+        e.preventDefault();
+
+        const newHold = {
+            jobNo: document.getElementById("jobNo")?.value || "",
+            rollNo: document.getElementById("rollNo")?.value || "",
+            jobName: document.getElementById("jobName")?.value || "",
+            process: document.getElementById("process")?.value || "",
+            machine: document.getElementById("machine")?.value || "",
+            netWeight: Number(document.getElementById("netWeight")?.value) || 0,
+            holdReason: document.getElementById("holdReason")?.value || "",
+            qcInspector: document.getElementById("qcInspector")?.value || "",
+            status: "hold",
+            currentStage: "inspection",
+            holdTimestamp: firebase.database.ServerValue.TIMESTAMP
+        };
+
+        holdsRef.push(newHold)
+            .then(() => {
+                holdForm.reset();
+                closeModal("addHoldModal", document.getElementById("addHoldBtn"));
+            })
+            .catch((error) => {
+                console.error("Error creating hold entry:", error);
+                alert("Failed to save QC Hold. Check console for details.");
+            });
+    });
 }
 
 /* =========================================================
@@ -361,9 +452,9 @@ function setupFilters() {
             const matchesReason = !selectedReason || text.includes(selectedReason);
 
             if (matchesQuery && matchesProcess && matchesStatus && matchesReason) {
-                card.classList.remove("hidden");
+                card.style.display = "";
             } else {
-                card.classList.add("hidden");
+                card.style.display = "none";
             }
         });
     };
