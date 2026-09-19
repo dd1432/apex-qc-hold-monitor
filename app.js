@@ -1796,7 +1796,7 @@ window.sendReminder =
             "Please take the necessary action on this QC hold roll.\n\n"+
 
 `Open APEX QC Hold Monitor Dashboard:\n` +
-`https://dd1432.github.io/apex-qc-hold-monitor/`;
+`https://dd1432.github.io/apex-qc-hold-monitor/\n\n';
 
 
         body +=
