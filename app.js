@@ -1,6 +1,7 @@
 /* =========================================================
    APEX QC HOLD ROLL MONITOR
    COMPLETE APPLICATION JAVASCRIPT
+   INCLUDING SEND REMINDER
 ========================================================= */
 
 
@@ -27,34 +28,51 @@ import {
 ========================================================= */
 
 const firebaseConfig = {
-  apiKey: "AIzaSyBZC1ln8lQxkq_JJBHpMtF8zy850T3rHcg",
-  authDomain: "apex-qc-hold-monitor.firebaseapp.com",
-  databaseURL: "https://apex-qc-hold-monitor-default-rtdb.asia-southeast1.firebasedatabase.app",
-  projectId: "apex-qc-hold-monitor",
-  storageBucket: "apex-qc-hold-monitor.firebasestorage.app",
-  messagingSenderId: "1006270751442",
-  appId: "1:1006270751442:web:dca6ce7f3b3a235ee9030b"
+
+    apiKey:
+        "AIzaSyBZC1ln8lQxkq_JJBHpMtF8zy850T3rHcg",
+
+    authDomain:
+        "apex-qc-hold-monitor.firebaseapp.com",
+
+    databaseURL:
+        "https://apex-qc-hold-monitor-default-rtdb.asia-southeast1.firebasedatabase.app",
+
+    projectId:
+        "apex-qc-hold-monitor",
+
+    storageBucket:
+        "apex-qc-hold-monitor.firebasestorage.app",
+
+    messagingSenderId:
+        "1006270751442",
+
+    appId:
+        "1:1006270751442:web:dca6ce7f3b3a235ee9030b"
 };
 
 
-/*
-   IMPORTANT:
-   Replace the placeholder Firebase values above with the
-   exact Firebase config from your Firebase console.
-*/
+const app =
+    initializeApp(
+        firebaseConfig
+    );
 
-const app = initializeApp(firebaseConfig);
 
-const db = getDatabase(app);
+const db =
+    getDatabase(app);
 
 
 /* =========================================================
    CLOUDINARY
 ========================================================= */
 
-const CLOUDINARY_CLOUD_NAME = "org593vv";
+const CLOUDINARY_CLOUD_NAME =
+    "org593vv";
 
-const CLOUDINARY_UPLOAD_PRESET = "apex_qc_hold";
+
+const CLOUDINARY_UPLOAD_PRESET =
+    "apex_qc_hold";
+
 
 const CLOUDINARY_UPLOAD_URL =
     `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`;
@@ -65,79 +83,151 @@ const CLOUDINARY_UPLOAD_URL =
 ========================================================= */
 
 const addHoldBtn =
-    document.getElementById("addHoldBtn");
+    document.getElementById(
+        "addHoldBtn"
+    );
+
 
 const addHoldModal =
-    document.getElementById("addHoldModal");
+    document.getElementById(
+        "addHoldModal"
+    );
+
 
 const closeAddHold =
-    document.getElementById("closeAddHold");
+    document.getElementById(
+        "closeAddHold"
+    );
+
 
 const cancelHold =
-    document.getElementById("cancelHold");
+    document.getElementById(
+        "cancelHold"
+    );
+
 
 const holdForm =
-    document.getElementById("holdForm");
+    document.getElementById(
+        "holdForm"
+    );
+
 
 const detailsModal =
-    document.getElementById("detailsModal");
+    document.getElementById(
+        "detailsModal"
+    );
+
 
 const closeDetails =
-    document.getElementById("closeDetails");
+    document.getElementById(
+        "closeDetails"
+    );
+
 
 const detailsContent =
-    document.getElementById("detailsContent");
+    document.getElementById(
+        "detailsContent"
+    );
+
 
 const holdList =
-    document.getElementById("holdList");
+    document.getElementById(
+        "holdList"
+    );
+
 
 const historyList =
-    document.getElementById("historyList");
+    document.getElementById(
+        "historyList"
+    );
+
 
 const searchInput =
-    document.getElementById("searchInput");
+    document.getElementById(
+        "searchInput"
+    );
+
 
 const processFilter =
-    document.getElementById("processFilter");
+    document.getElementById(
+        "processFilter"
+    );
+
 
 const statusFilter =
-    document.getElementById("statusFilter");
+    document.getElementById(
+        "statusFilter"
+    );
+
 
 const reasonFilter =
-    document.getElementById("reasonFilter");
+    document.getElementById(
+        "reasonFilter"
+    );
+
 
 const labelPhoto =
-    document.getElementById("labelPhoto");
+    document.getElementById(
+        "labelPhoto"
+    );
+
 
 const photoPreview =
-    document.getElementById("photoPreview");
+    document.getElementById(
+        "photoPreview"
+    );
+
 
 const uploadProgress =
-    document.getElementById("uploadProgress");
+    document.getElementById(
+        "uploadProgress"
+    );
+
 
 const saveHoldBtn =
-    document.getElementById("saveHoldBtn");
+    document.getElementById(
+        "saveHoldBtn"
+    );
 
 
-/* SUMMARY */
+/* =========================================================
+   SUMMARY
+========================================================= */
 
 const activeHoldsEl =
-    document.getElementById("activeHolds");
+    document.getElementById(
+        "activeHolds"
+    );
+
 
 const actionRequiredEl =
-    document.getElementById("actionRequired");
+    document.getElementById(
+        "actionRequired"
+    );
+
 
 const over24El =
-    document.getElementById("over24");
+    document.getElementById(
+        "over24"
+    );
+
 
 const over48El =
-    document.getElementById("over48");
+    document.getElementById(
+        "over48"
+    );
+
 
 const releasedEl =
-    document.getElementById("released");
+    document.getElementById(
+        "released"
+    );
+
 
 const totalWeightEl =
-    document.getElementById("totalWeight");
+    document.getElementById(
+        "totalWeight"
+    );
 
 
 /* =========================================================
@@ -152,7 +242,7 @@ let currentTab = "active";
 
 
 /* =========================================================
-   HELPERS
+   HTML ESCAPE
 ========================================================= */
 
 function escapeHtml(value) {
@@ -164,12 +254,75 @@ function escapeHtml(value) {
         return "";
     }
 
+
     return String(value)
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
+
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+
+        .replace(
+            /</g,
+            "&lt;"
+        )
+
+        .replace(
+            />/g,
+            "&gt;"
+        )
+
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+
+        .replace(
+            /'/g,
+            "&#039;"
+        );
+}
+
+
+/* =========================================================
+   URL ENCODE FOR MAILTO
+========================================================= */
+
+function encodeMailtoValue(value) {
+
+    return encodeURIComponent(
+        String(value || "")
+    );
+}
+
+
+/* =========================================================
+   EMAIL VALIDATION
+========================================================= */
+
+function normalizeEmailList(value) {
+
+    return String(
+        value || ""
+    )
+
+        .split(
+            /[,;]+/
+        )
+
+        .map(
+            email =>
+                email.trim()
+        )
+
+        .filter(Boolean);
+}
+
+
+function isValidEmail(email) {
+
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+        .test(email);
 }
 
 
@@ -183,16 +336,26 @@ function getPhotoUrl(photo) {
         return "";
     }
 
-    if (typeof photo === "string") {
+
+    if (
+        typeof photo === "string"
+    ) {
         return photo;
     }
 
+
     return (
+
         photo.secure_url ||
+
         photo.url ||
+
         photo.imageUrl ||
+
         photo.downloadURL ||
+
         ""
+
     );
 }
 
@@ -201,45 +364,78 @@ function getPhotoUrl(photo) {
    WORKFLOW
 ========================================================= */
 
-function determineWorkflow(holdReason) {
+function determineWorkflow(
+    holdReason
+) {
 
-    if (holdReason === "Shade Mismatch") {
+    if (
+        holdReason ===
+        "Shade Mismatch"
+    ) {
+
         return "shadeApproval";
     }
 
+
     if (
-        holdReason === "GSM / Weight"
+        holdReason ===
+        "GSM / Weight"
     ) {
+
         return "review";
     }
+
 
     return "inspection";
 }
 
 
-function getInitialWorkflowState(workflowType) {
+function getInitialWorkflowState(
+    workflowType
+) {
 
-    if (workflowType === "shadeApproval") {
-
-        return {
-            status: "SHADE_APPROVAL",
-            currentStage: "PRINTING_MANAGER"
-        };
-
-    }
-
-    if (workflowType === "review") {
+    if (
+        workflowType ===
+        "shadeApproval"
+    ) {
 
         return {
-            status: "REVIEW",
-            currentStage: "REVIEW"
-        };
 
+            status:
+                "SHADE_APPROVAL",
+
+            currentStage:
+                "PRINTING_MANAGER"
+
+        };
     }
+
+
+    if (
+        workflowType ===
+        "review"
+    ) {
+
+        return {
+
+            status:
+                "REVIEW",
+
+            currentStage:
+                "REVIEW"
+
+        };
+    }
+
 
     return {
-        status: "HOLD",
-        currentStage: "INSPECTION"
+
+        status:
+            "HOLD",
+
+        currentStage:
+            "INSPECTION"
+
     };
 }
 
@@ -252,9 +448,11 @@ function formatStatus(status) {
 
     const labels = {
 
-        HOLD: "HOLD",
+        HOLD:
+            "HOLD",
 
-        INSPECTION: "INSPECTION",
+        INSPECTION:
+            "INSPECTION",
 
         INSPECTION_DONE:
             "INSPECTION DONE",
@@ -272,12 +470,17 @@ function formatStatus(status) {
             "REJECTED"
     };
 
-    return labels[status] || status || "UNKNOWN";
+
+    return (
+        labels[status] ||
+        status ||
+        "UNKNOWN"
+    );
 }
 
 
 /* =========================================================
-   STATUS BADGE CLASS
+   STATUS BADGE
 ========================================================= */
 
 function getBadgeClass(status) {
@@ -306,7 +509,11 @@ function getBadgeClass(status) {
             "badge-rejected"
     };
 
-    return classes[status] || "badge-hold";
+
+    return (
+        classes[status] ||
+        "badge-hold"
+    );
 }
 
 
@@ -343,7 +550,12 @@ function formatStage(stage) {
             "REJECTED"
     };
 
-    return labels[stage] || stage || "-";
+
+    return (
+        labels[stage] ||
+        stage ||
+        "-"
+    );
 }
 
 
@@ -351,18 +563,27 @@ function formatStage(stage) {
    DATE / TIME
 ========================================================= */
 
-function formatDateTime(timestamp) {
+function formatDateTime(
+    timestamp
+) {
 
     if (!timestamp) {
         return "-";
     }
 
+
     const date =
         new Date(timestamp);
 
-    if (Number.isNaN(date.getTime())) {
+
+    if (
+        Number.isNaN(
+            date.getTime()
+        )
+    ) {
         return "-";
     }
+
 
     return date.toLocaleString(
         "en-IN",
@@ -382,20 +603,28 @@ function formatDateTime(timestamp) {
    HOLD DURATION
 ========================================================= */
 
-function getHoldDurationMs(hold) {
+function getHoldDurationMs(
+    hold
+) {
 
     const start =
-        Number(hold?.holdTimestamp || 0);
+        Number(
+            hold?.holdTimestamp ||
+            0
+        );
+
 
     if (!start) {
         return 0;
     }
+
 
     const end =
         Number(
             hold?.releaseTimestamp ||
             Date.now()
         );
+
 
     return Math.max(
         0,
@@ -410,45 +639,71 @@ function formatDuration(ms) {
         return "0h 0m";
     }
 
+
     const totalMinutes =
-        Math.floor(ms / 60000);
+        Math.floor(
+            ms / 60000
+        );
+
 
     const days =
         Math.floor(
             totalMinutes / 1440
         );
 
+
     const hours =
         Math.floor(
-            (totalMinutes % 1440) / 60
+            (
+                totalMinutes % 1440
+            ) / 60
         );
+
 
     const minutes =
         totalMinutes % 60;
 
+
     if (days > 0) {
-        return `${days}d ${hours}h ${minutes}m`;
+
+        return (
+            `${days}d ` +
+            `${hours}h ` +
+            `${minutes}m`
+        );
     }
 
-    return `${hours}h ${minutes}m`;
+
+    return (
+        `${hours}h ` +
+        `${minutes}m`
+    );
 }
 
 
-function getAgeClass(hold) {
+function getAgeClass(
+    hold
+) {
 
     const ms =
-        getHoldDurationMs(hold);
+        getHoldDurationMs(
+            hold
+        );
+
 
     const hours =
         ms / 3600000;
+
 
     if (hours >= 48) {
         return "critical";
     }
 
+
     if (hours >= 24) {
         return "warning";
     }
+
 
     return "normal";
 }
@@ -458,12 +713,20 @@ function getAgeClass(hold) {
    ACTION REQUIREMENT
 ========================================================= */
 
-function requiresAction(hold) {
+function requiresAction(
+    hold
+) {
 
     return (
+
         hold &&
-        hold.status !== "RELEASED" &&
-        hold.status !== "REJECTED"
+
+        hold.status !==
+            "RELEASED" &&
+
+        hold.status !==
+            "REJECTED"
+
     );
 }
 
@@ -472,18 +735,25 @@ function requiresAction(hold) {
    MODAL CONTROL
 ========================================================= */
 
-function openModal(modal) {
+function openModal(
+    modal
+) {
 
     if (!modal) {
         return;
     }
 
-    modal.classList.remove("hidden");
+
+    modal.classList.remove(
+        "hidden"
+    );
+
 
     modal.setAttribute(
         "aria-hidden",
         "false"
     );
+
 
     document.body.classList.add(
         "modal-open"
@@ -491,23 +761,38 @@ function openModal(modal) {
 }
 
 
-function closeModal(modal) {
+function closeModal(
+    modal
+) {
 
     if (!modal) {
         return;
     }
 
-    modal.classList.add("hidden");
+
+    modal.classList.add(
+        "hidden"
+    );
+
 
     modal.setAttribute(
         "aria-hidden",
         "true"
     );
 
+
     if (
-        addHoldModal.classList.contains("hidden") &&
-        detailsModal.classList.contains("hidden")
+
+        addHoldModal.classList.contains(
+            "hidden"
+        ) &&
+
+        detailsModal.classList.contains(
+            "hidden"
+        )
+
     ) {
+
         document.body.classList.remove(
             "modal-open"
         );
@@ -523,28 +808,39 @@ function openAddHoldModal() {
 
     holdForm.reset();
 
-    photoPreview.innerHTML = "";
+    photoPreview.innerHTML =
+        "";
 
-    uploadProgress.textContent = "";
+    uploadProgress.textContent =
+        "";
 
-    saveHoldBtn.disabled = false;
+    saveHoldBtn.disabled =
+        false;
 
     saveHoldBtn.textContent =
         "Save Hold";
 
-    openModal(addHoldModal);
+
+    openModal(
+        addHoldModal
+    );
 }
 
 
 function closeAddHoldModal() {
 
-    closeModal(addHoldModal);
+    closeModal(
+        addHoldModal
+    );
+
 
     holdForm.reset();
 
-    photoPreview.innerHTML = "";
+    photoPreview.innerHTML =
+        "";
 
-    uploadProgress.textContent = "";
+    uploadProgress.textContent =
+        "";
 }
 
 
@@ -556,44 +852,62 @@ labelPhoto.addEventListener(
     "change",
     () => {
 
-        photoPreview.innerHTML = "";
+        photoPreview.innerHTML =
+            "";
 
-        uploadProgress.textContent = "";
+        uploadProgress.textContent =
+            "";
+
 
         const file =
             labelPhoto.files?.[0];
+
 
         if (!file) {
             return;
         }
 
+
         if (
-            !file.type.startsWith("image/")
+            !file.type.startsWith(
+                "image/"
+            )
         ) {
 
             alert(
                 "Please select a valid image file."
             );
 
-            labelPhoto.value = "";
+
+            labelPhoto.value =
+                "";
+
 
             return;
         }
 
+
         const reader =
             new FileReader();
 
-        reader.onload = event => {
 
-            photoPreview.innerHTML = `
-                <img
-                    src="${event.target.result}"
-                    alt="Label photo preview"
-                >
-            `;
-        };
+        reader.onload =
+            event => {
 
-        reader.readAsDataURL(file);
+                photoPreview.innerHTML = `
+
+                    <img
+                        src="${event.target.result}"
+                        alt="Label photo preview"
+                    >
+
+                `;
+            };
+
+
+        reader.readAsDataURL(
+            file
+        );
     }
 );
 
@@ -602,21 +916,27 @@ labelPhoto.addEventListener(
    CLOUDINARY UPLOAD
 ========================================================= */
 
-async function uploadPhoto(file) {
+async function uploadPhoto(
+    file
+) {
 
     if (!file) {
+
         throw new Error(
             "Label photo is required."
         );
     }
 
+
     const formData =
         new FormData();
+
 
     formData.append(
         "file",
         file
     );
+
 
     formData.append(
         "upload_preset",
@@ -632,8 +952,11 @@ async function uploadPhoto(file) {
         await fetch(
             CLOUDINARY_UPLOAD_URL,
             {
-                method: "POST",
-                body: formData
+                method:
+                    "POST",
+
+                body:
+                    formData
             }
         );
 
@@ -643,18 +966,23 @@ async function uploadPhoto(file) {
         let errorMessage =
             "Photo upload failed.";
 
+
         try {
 
             const errorData =
                 await response.json();
+
 
             errorMessage =
                 errorData?.error?.message ||
                 errorMessage;
 
         } catch {
+
             // Ignore JSON parsing error
+
         }
+
 
         throw new Error(
             errorMessage
@@ -677,12 +1005,13 @@ async function uploadPhoto(file) {
     uploadProgress.textContent =
         "Photo uploaded successfully.";
 
+
     return result;
 }
 
 
 /* =========================================================
-   CREATE ACTION OBJECT
+   CREATE ACTION
 ========================================================= */
 
 function createAction(
@@ -708,15 +1037,21 @@ function createAction(
 
 
 /* =========================================================
-   ADD ACTION + UPDATE HOLD
+   UPDATE HOLD WITH ACTION
 ========================================================= */
 
 async function updateHoldWithAction(
+
     holdId,
+
     action,
+
     person,
+
     remarks,
+
     changes = {}
+
 ) {
 
     const actionRef =
@@ -727,8 +1062,10 @@ async function updateHoldWithAction(
             )
         );
 
+
     const actionId =
         actionRef.key;
+
 
     const actionData =
         createAction(
@@ -737,17 +1074,24 @@ async function updateHoldWithAction(
             remarks
         );
 
+
     const updates = {
 
-        [`holdRolls/${holdId}/actions/${actionId}`]:
+        [
+            `holdRolls/${holdId}/actions/${actionId}`
+        ]:
             actionData,
 
-        [`holdRolls/${holdId}/updatedAt`]:
+        [
+            `holdRolls/${holdId}/updatedAt`
+        ]:
             Date.now()
     };
 
 
-    Object.keys(changes).forEach(
+    Object.keys(
+        changes
+    ).forEach(
         key => {
 
             updates[
@@ -770,11 +1114,16 @@ async function updateHoldWithAction(
    CREATE HOLD
 ========================================================= */
 
-async function createHold(event) {
+async function createHold(
+    event
+) {
 
     event.preventDefault();
 
-    if (!holdForm.checkValidity()) {
+
+    if (
+        !holdForm.checkValidity()
+    ) {
 
         holdForm.reportValidity();
 
@@ -783,73 +1132,114 @@ async function createHold(event) {
 
 
     const formData =
-        new FormData(holdForm);
+        new FormData(
+            holdForm
+        );
 
 
     const jobNo =
         String(
-            formData.get("jobNo") || ""
+            formData.get(
+                "jobNo"
+            ) || ""
         ).trim();
+
 
     const jobName =
         String(
-            formData.get("jobName") || ""
+            formData.get(
+                "jobName"
+            ) || ""
         ).trim();
+
 
     const rollNo =
         String(
-            formData.get("rollNo") || ""
+            formData.get(
+                "rollNo"
+            ) || ""
         ).trim();
+
 
     const netWeight =
         Number(
-            formData.get("netWeight") || 0
+            formData.get(
+                "netWeight"
+            ) || 0
         );
+
 
     const process =
         String(
-            formData.get("process") || ""
+            formData.get(
+                "process"
+            ) || ""
         ).trim();
+
 
     const machine =
         String(
-            formData.get("machine") || ""
+            formData.get(
+                "machine"
+            ) || ""
         ).trim();
+
 
     const productionDate =
         String(
-            formData.get("productionDate") || ""
+            formData.get(
+                "productionDate"
+            ) || ""
         ).trim();
+
 
     const shift =
         String(
-            formData.get("shift") || ""
+            formData.get(
+                "shift"
+            ) || ""
         ).trim();
+
 
     const operator =
         String(
-            formData.get("operator") || ""
+            formData.get(
+                "operator"
+            ) || ""
         ).trim();
+
 
     const supervisor =
         String(
-            formData.get("supervisor") || ""
+            formData.get(
+                "supervisor"
+            ) || ""
         ).trim();
+
 
     const qcInspector =
         String(
-            formData.get("qcInspector") || ""
+            formData.get(
+                "qcInspector"
+            ) || ""
         ).trim();
+
 
     const holdReason =
         String(
-            formData.get("holdReason") || ""
+            formData.get(
+                "holdReason"
+            ) || ""
         ).trim();
+
 
     const observation =
         String(
-            formData.get("observation") || ""
+            formData.get(
+                "observation"
+            ) || ""
         ).trim();
+
 
     const photoFile =
         labelPhoto.files?.[0];
@@ -859,59 +1249,83 @@ async function createHold(event) {
 
     if (!jobNo) {
 
-        alert("Please enter Job Number.");
+        alert(
+            "Please enter Job Number."
+        );
 
         return;
     }
+
 
     if (!rollNo) {
 
-        alert("Please enter Roll Number.");
+        alert(
+            "Please enter Roll Number."
+        );
 
         return;
     }
+
 
     if (!process) {
 
-        alert("Please select Process.");
+        alert(
+            "Please select Process."
+        );
 
         return;
     }
+
 
     if (!productionDate) {
 
-        alert("Please select Production Date.");
+        alert(
+            "Please select Production Date."
+        );
 
         return;
     }
+
 
     if (!shift) {
 
-        alert("Please select Shift.");
+        alert(
+            "Please select Shift."
+        );
 
         return;
     }
+
 
     if (!qcInspector) {
 
-        alert("Please enter QC Inspector.");
+        alert(
+            "Please enter QC Inspector."
+        );
 
         return;
     }
+
 
     if (!holdReason) {
 
-        alert("Please select Hold Reason.");
+        alert(
+            "Please select Hold Reason."
+        );
 
         return;
     }
+
 
     if (!observation) {
 
-        alert("Please enter Observation.");
+        alert(
+            "Please enter Observation."
+        );
 
         return;
     }
+
 
     if (!photoFile) {
 
@@ -925,13 +1339,15 @@ async function createHold(event) {
 
     try {
 
-        saveHoldBtn.disabled = true;
+        saveHoldBtn.disabled =
+            true;
+
 
         saveHoldBtn.textContent =
             "Saving...";
 
 
-        /* UPLOAD PHOTO */
+        /* PHOTO */
 
         const photo =
             await uploadPhoto(
@@ -945,6 +1361,7 @@ async function createHold(event) {
             determineWorkflow(
                 holdReason
             );
+
 
         const workflowState =
             getInitialWorkflowState(
@@ -962,6 +1379,7 @@ async function createHold(event) {
                 )
             );
 
+
         const holdId =
             holdRef.key;
 
@@ -970,7 +1388,7 @@ async function createHold(event) {
             Date.now();
 
 
-        /* FIRST ACTION */
+        /* INITIAL ACTION */
 
         const actionRef =
             push(
@@ -1000,7 +1418,9 @@ async function createHold(event) {
             rollNo,
 
             netWeight:
-                Number.isFinite(netWeight)
+                Number.isFinite(
+                    netWeight
+                )
                     ? netWeight
                     : 0,
 
@@ -1028,10 +1448,12 @@ async function createHold(event) {
                     photo.secure_url,
 
                 public_id:
-                    photo.public_id || "",
+                    photo.public_id ||
+                    "",
 
                 original_filename:
-                    photo.original_filename || ""
+                    photo.original_filename ||
+                    ""
             },
 
             workflowType,
@@ -1069,6 +1491,7 @@ async function createHold(event) {
 
         closeAddHoldModal();
 
+
         alert(
             `Hold created successfully.\n\nJob: ${jobNo}\nRoll: ${rollNo}`
         );
@@ -1081,6 +1504,7 @@ async function createHold(event) {
             error
         );
 
+
         alert(
             "Unable to create hold.\n\n" +
             (
@@ -1089,9 +1513,12 @@ async function createHold(event) {
             )
         );
 
+
     } finally {
 
-        saveHoldBtn.disabled = false;
+        saveHoldBtn.disabled =
+            false;
+
 
         saveHoldBtn.textContent =
             "Save Hold";
@@ -1100,34 +1527,482 @@ async function createHold(event) {
 
 
 /* =========================================================
+   SEND REMINDER
+========================================================= */
+
+window.sendReminder =
+    function () {
+
+        const hold =
+            holds[currentHoldId];
+
+
+        if (!hold) {
+
+            alert(
+                "Hold record not found."
+            );
+
+            return;
+        }
+
+
+        if (
+            hold.status ===
+                "RELEASED" ||
+            hold.status ===
+                "REJECTED"
+        ) {
+
+            alert(
+                "Reminder is not required for a closed hold."
+            );
+
+            return;
+        }
+
+
+        const responsiblePerson =
+            document
+                .getElementById(
+                    "reminderPerson"
+                )
+                ?.value
+                .trim();
+
+
+        const toValue =
+            document
+                .getElementById(
+                    "reminderTo"
+                )
+                ?.value
+                .trim();
+
+
+        const ccValue =
+            document
+                .getElementById(
+                    "reminderCc"
+                )
+                ?.value
+                .trim();
+
+
+        const additionalMessage =
+            document
+                .getElementById(
+                    "reminderMessage"
+                )
+                ?.value
+                .trim();
+
+
+        if (!responsiblePerson) {
+
+            alert(
+                "Please enter Responsible Person name."
+            );
+
+            return;
+        }
+
+
+        const toEmails =
+            normalizeEmailList(
+                toValue
+            );
+
+
+        const ccEmails =
+            normalizeEmailList(
+                ccValue
+            );
+
+
+        if (!toEmails.length) {
+
+            alert(
+                "Please enter at least one To email address."
+            );
+
+            return;
+        }
+
+
+        const invalidTo =
+            toEmails.filter(
+                email =>
+                    !isValidEmail(
+                        email
+                    )
+            );
+
+
+        if (invalidTo.length) {
+
+            alert(
+                "Invalid To email address:\n\n" +
+                invalidTo.join("\n")
+            );
+
+            return;
+        }
+
+
+        const invalidCc =
+            ccEmails.filter(
+                email =>
+                    !isValidEmail(
+                        email
+                    )
+            );
+
+
+        if (invalidCc.length) {
+
+            alert(
+                "Invalid CC email address:\n\n" +
+                invalidCc.join("\n")
+            );
+
+            return;
+        }
+
+
+        const age =
+            formatDuration(
+                getHoldDurationMs(
+                    hold
+                )
+            );
+
+
+        const subject =
+            `QC HOLD REMINDER - Job ${hold.jobNo} - Roll ${hold.rollNo}`;
+
+
+        let body = "";
+
+
+        body +=
+            "Dear " +
+            responsiblePerson +
+            ",\n\n";
+
+
+        body +=
+            "This is a reminder regarding the following QC Hold Roll:\n\n";
+
+
+        body +=
+            "----------------------------------------\n";
+
+
+        body +=
+            `Job Number       : ${hold.jobNo || "-"}\n`;
+
+
+        body +=
+            `Job Name         : ${hold.jobName || "-"}\n`;
+
+
+        body +=
+            `Roll Number      : ${hold.rollNo || "-"}\n`;
+
+
+        body +=
+            `Net Weight       : ${
+                hold.netWeight !== undefined &&
+                hold.netWeight !== null &&
+                hold.netWeight !== ""
+                    ? hold.netWeight + " kg"
+                    : "-"
+            }\n`;
+
+
+        body +=
+            `Process          : ${hold.process || "-"}\n`;
+
+
+        body +=
+            `Machine          : ${hold.machine || "-"}\n`;
+
+
+        body +=
+            `Production Date  : ${hold.productionDate || "-"}\n`;
+
+
+        body +=
+            `Shift            : ${hold.shift || "-"}\n`;
+
+
+        body +=
+            `Operator         : ${hold.operator || "-"}\n`;
+
+
+        body +=
+            `Supervisor       : ${hold.supervisor || "-"}\n`;
+
+
+        body +=
+            `QC Inspector     : ${hold.qcInspector || "-"}\n`;
+
+
+        body +=
+            `Hold Reason      : ${hold.holdReason || "-"}\n`;
+
+
+        body +=
+            `Current Status   : ${formatStatus(hold.status)}\n`;
+
+
+        body +=
+            `Current Stage    : ${formatStage(hold.currentStage)}\n`;
+
+
+        body +=
+            `Hold Created     : ${formatDateTime(hold.holdTimestamp)}\n`;
+
+
+        body +=
+            `Current Hold Age : ${age}\n`;
+
+
+        body +=
+            "----------------------------------------\n\n";
+
+
+        body +=
+            "Observation:\n";
+
+
+        body +=
+            `${hold.observation || "-"}\n\n`;
+
+
+        if (additionalMessage) {
+
+            body +=
+                "Additional Message:\n";
+
+
+            body +=
+                `${additionalMessage}\n\n`;
+        }
+
+
+        body +=
+            "Please take the necessary action on this QC hold roll.\n\n";
+
+
+        body +=
+            "Regards,\n";
+
+
+        body +=
+            "APEX QC HOLD ROLL MONITOR";
+
+
+        /*
+           mailto uses the device/browser's configured
+           default email handler.
+
+           Multiple To addresses:
+           email1@example.com,email2@example.com
+
+           Multiple CC addresses:
+           email3@example.com,email4@example.com
+        */
+
+        const mailto =
+            "mailto:" +
+            toEmails.join(",") +
+
+            "?subject=" +
+            encodeMailtoValue(
+                subject
+            ) +
+
+            "&body=" +
+            encodeMailtoValue(
+                body
+            );
+
+
+        if (ccEmails.length) {
+
+            const ccParameter =
+                "&cc=" +
+                encodeMailtoValue(
+                    ccEmails.join(",")
+                );
+
+
+            window.location.href =
+                mailto +
+                ccParameter;
+
+        } else {
+
+            window.location.href =
+                mailto;
+        }
+    };
+
+
+/* =========================================================
+   REMINDER PANEL
+========================================================= */
+
+function renderReminderPanel(
+    hold
+) {
+
+    return `
+
+        <section class="reminder-panel">
+
+            <h3>
+                Send Reminder
+            </h3>
+
+
+            <div class="reminder-subtitle">
+
+                Send a pre-filled QC hold reminder
+                through your device's default email application.
+
+            </div>
+
+
+            <div class="form-grid">
+
+
+                <div class="form-group">
+
+                    <label for="reminderPerson">
+                        Responsible Person *
+                    </label>
+
+                    <input
+                        type="text"
+                        id="reminderPerson"
+                        placeholder="Name of responsible person"
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="reminderTo">
+                        To Email *
+                    </label>
+
+                    <input
+                        type="text"
+                        id="reminderTo"
+                        placeholder="person@example.com, person2@example.com"
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="reminderCc">
+                        CC Email
+                    </label>
+
+                    <input
+                        type="text"
+                        id="reminderCc"
+                        placeholder="Optional CC email addresses"
+                    >
+
+                </div>
+
+
+                <div class="form-group full-width">
+
+                    <label for="reminderMessage">
+                        Additional Message
+                    </label>
+
+                    <textarea
+                        id="reminderMessage"
+                        rows="3"
+                        placeholder="Optional additional message..."
+                    ></textarea>
+
+                </div>
+
+            </div>
+
+
+            <div class="action-buttons">
+
+                <button
+                    type="button"
+                    class="btn-primary"
+                    onclick="sendReminder()"
+                >
+                    ✉ Send Reminder
+                </button>
+
+            </div>
+
+
+            <div class="reminder-help">
+
+                Separate multiple email addresses with
+                comma or semicolon.
+
+            </div>
+
+        </section>
+
+    `;
+}
+
+
+/* =========================================================
    DETAILS MODAL
 ========================================================= */
 
-window.openDetails = function (holdId) {
+window.openDetails =
+    function (
+        holdId
+    ) {
 
-    currentHoldId =
-        holdId;
+        currentHoldId =
+            holdId;
 
-    const hold =
-        holds[holdId];
 
-    if (!hold) {
+        const hold =
+            holds[holdId];
 
-        alert(
-            "Hold record not found."
+
+        if (!hold) {
+
+            alert(
+                "Hold record not found."
+            );
+
+            return;
+        }
+
+
+        renderDetailsModal(
+            hold
         );
 
-        return;
-    }
 
-    renderDetailsModal(
-        hold
-    );
-
-    openModal(
-        detailsModal
-    );
-};
+        openModal(
+            detailsModal
+        );
+    };
 
 
 /* =========================================================
@@ -1139,6 +2014,7 @@ function closeDetailsModal() {
     closeModal(
         detailsModal
     );
+
 
     currentHoldId =
         null;
@@ -1155,6 +2031,7 @@ window.markInspectionDone =
         const hold =
             holds[currentHoldId];
 
+
         if (!hold) {
             return;
         }
@@ -1168,6 +2045,7 @@ window.markInspectionDone =
                 ?.value
                 .trim();
 
+
         const supervisor =
             document
                 .getElementById(
@@ -1175,6 +2053,7 @@ window.markInspectionDone =
                 )
                 ?.value
                 .trim();
+
 
         const remarks =
             document
@@ -1193,6 +2072,7 @@ window.markInspectionDone =
 
             return;
         }
+
 
         if (!supervisor) {
 
@@ -1217,12 +2097,15 @@ window.markInspectionDone =
                 remarks,
 
                 {
+
                     status:
                         "INSPECTION_DONE",
 
                     currentStage:
                         "INSPECTION_DONE"
+
                 }
+
             );
 
 
@@ -1233,7 +2116,10 @@ window.markInspectionDone =
 
         } catch (error) {
 
-            console.error(error);
+            console.error(
+                error
+            );
+
 
             alert(
                 "Unable to update inspection."
@@ -1252,6 +2138,7 @@ window.releaseInspectionHold =
         const hold =
             holds[currentHoldId];
 
+
         if (!hold) {
             return;
         }
@@ -1264,6 +2151,7 @@ window.releaseInspectionHold =
                 )
                 ?.value
                 .trim();
+
 
         const remarks =
             document
@@ -1297,6 +2185,7 @@ window.releaseInspectionHold =
                 remarks,
 
                 {
+
                     status:
                         "RELEASED",
 
@@ -1305,7 +2194,9 @@ window.releaseInspectionHold =
 
                     releaseTimestamp:
                         Date.now()
+
                 }
+
             );
 
 
@@ -1316,7 +2207,10 @@ window.releaseInspectionHold =
 
         } catch (error) {
 
-            console.error(error);
+            console.error(
+                error
+            );
+
 
             alert(
                 "Unable to release hold."
@@ -1340,6 +2234,7 @@ window.rejectInspectionHold =
                 ?.value
                 .trim();
 
+
         const remarks =
             document
                 .getElementById(
@@ -1357,6 +2252,7 @@ window.rejectInspectionHold =
 
             return;
         }
+
 
         if (!remarks) {
 
@@ -1381,6 +2277,7 @@ window.rejectInspectionHold =
                 remarks,
 
                 {
+
                     status:
                         "REJECTED",
 
@@ -1389,7 +2286,9 @@ window.rejectInspectionHold =
 
                     releaseTimestamp:
                         Date.now()
+
                 }
+
             );
 
 
@@ -1400,7 +2299,10 @@ window.rejectInspectionHold =
 
         } catch (error) {
 
-            console.error(error);
+            console.error(
+                error
+            );
+
 
             alert(
                 "Unable to reject hold."
@@ -1422,6 +2324,7 @@ window.submitShadeApproval =
         const hold =
             holds[currentHoldId];
 
+
         if (!hold) {
             return;
         }
@@ -1430,33 +2333,43 @@ window.submitShadeApproval =
         const fieldMap = {
 
             PRINTING_MANAGER: {
+
                 nameId:
                     "printingManagerName",
 
                 remarksId:
                     "printingManagerRemarks"
+
             },
 
+
             QC_MANAGER: {
+
                 nameId:
                     "qcManagerName",
 
                 remarksId:
                     "qcManagerRemarks"
+
             },
 
+
             GM: {
+
                 nameId:
                     "gmName",
 
                 remarksId:
                     "gmRemarks"
+
             }
+
         };
 
 
         const fields =
             fieldMap[stage];
+
 
         if (!fields) {
             return;
@@ -1470,6 +2383,7 @@ window.submitShadeApproval =
                 )
                 ?.value
                 .trim();
+
 
         const remarks =
             document
@@ -1491,8 +2405,12 @@ window.submitShadeApproval =
 
 
         if (
-            decision === "REJECT" &&
+
+            decision ===
+                "REJECT" &&
+
             !remarks
+
         ) {
 
             alert(
@@ -1506,13 +2424,18 @@ window.submitShadeApproval =
         let actionText =
             "SHADE APPROVED";
 
+
         let changes = {};
 
 
-        if (decision === "REJECT") {
+        if (
+            decision ===
+            "REJECT"
+        ) {
 
             actionText =
                 "SHADE REJECTED";
+
 
             changes = {
 
@@ -1524,9 +2447,11 @@ window.submitShadeApproval =
 
                 releaseTimestamp:
                     Date.now()
+
             };
 
         } else {
+
 
             if (
                 stage ===
@@ -1540,10 +2465,13 @@ window.submitShadeApproval =
 
                     currentStage:
                         "QC_MANAGER"
+
                 };
 
+
             } else if (
-                stage === "QC_MANAGER"
+                stage ===
+                "QC_MANAGER"
             ) {
 
                 changes = {
@@ -1553,10 +2481,13 @@ window.submitShadeApproval =
 
                     currentStage:
                         "GM"
+
                 };
 
+
             } else if (
-                stage === "GM"
+                stage ===
+                "GM"
             ) {
 
                 changes = {
@@ -1569,6 +2500,7 @@ window.submitShadeApproval =
 
                     releaseTimestamp:
                         Date.now()
+
                 };
             }
         }
@@ -1587,24 +2519,29 @@ window.submitShadeApproval =
                 remarks,
 
                 changes
+
             );
 
 
             if (
-                decision === "REJECT"
+                decision ===
+                "REJECT"
             ) {
 
                 alert(
                     "Roll rejected."
                 );
 
+
             } else if (
-                stage === "GM"
+                stage ===
+                "GM"
             ) {
 
                 alert(
                     "Shade approved and roll released."
                 );
+
 
             } else {
 
@@ -1616,7 +2553,10 @@ window.submitShadeApproval =
 
         } catch (error) {
 
-            console.error(error);
+            console.error(
+                error
+            );
+
 
             alert(
                 "Unable to submit approval."
@@ -1642,6 +2582,7 @@ window.submitReview =
                 ?.value
                 .trim();
 
+
         const remarks =
             document
                 .getElementById(
@@ -1662,8 +2603,12 @@ window.submitReview =
 
 
         if (
-            decision === "REJECT" &&
+
+            decision ===
+                "REJECT" &&
+
             !remarks
+
         ) {
 
             alert(
@@ -1677,17 +2622,26 @@ window.submitReview =
         const changes = {
 
             status:
-                decision === "RELEASE"
+
+                decision ===
+                "RELEASE"
+
                     ? "RELEASED"
                     : "REJECTED",
 
+
             currentStage:
-                decision === "RELEASE"
+
+                decision ===
+                "RELEASE"
+
                     ? "RELEASED"
                     : "REJECTED",
+
 
             releaseTimestamp:
                 Date.now()
+
         };
 
 
@@ -1697,7 +2651,9 @@ window.submitReview =
 
                 currentHoldId,
 
-                decision === "RELEASE"
+                decision ===
+                "RELEASE"
+
                     ? "REVIEW APPROVED"
                     : "REVIEW REJECTED",
 
@@ -1706,19 +2662,27 @@ window.submitReview =
                 remarks,
 
                 changes
+
             );
 
 
             alert(
-                decision === "RELEASE"
+
+                decision ===
+                "RELEASE"
+
                     ? "Review approved. Roll released."
                     : "Roll rejected."
+
             );
 
 
         } catch (error) {
 
-            console.error(error);
+            console.error(
+                error
+            );
+
 
             alert(
                 "Unable to submit review."
@@ -1731,7 +2695,9 @@ window.submitReview =
    DETAILS MODAL RENDER
 ========================================================= */
 
-function renderDetailsModal(hold) {
+function renderDetailsModal(
+    hold
+) {
 
     const photoUrl =
         getPhotoUrl(
@@ -1740,20 +2706,29 @@ function renderDetailsModal(hold) {
 
 
     const isClosed =
-        hold.status === "RELEASED" ||
-        hold.status === "REJECTED";
+
+        hold.status ===
+            "RELEASED" ||
+
+        hold.status ===
+            "REJECTED";
 
 
     detailsContent.innerHTML = `
 
         <div class="details-top">
 
+
             <div class="details-top-item">
 
-                <label>Job Number</label>
+                <label>
+                    Job Number
+                </label>
 
                 <strong>
-                    ${escapeHtml(hold.jobNo)}
+                    ${escapeHtml(
+                        hold.jobNo
+                    )}
                 </strong>
 
             </div>
@@ -1761,10 +2736,14 @@ function renderDetailsModal(hold) {
 
             <div class="details-top-item">
 
-                <label>Roll Number</label>
+                <label>
+                    Roll Number
+                </label>
 
                 <strong>
-                    ${escapeHtml(hold.rollNo)}
+                    ${escapeHtml(
+                        hold.rollNo
+                    )}
                 </strong>
 
             </div>
@@ -1772,12 +2751,24 @@ function renderDetailsModal(hold) {
 
             <div class="details-top-item">
 
-                <label>Status</label>
+                <label>
+                    Status
+                </label>
 
                 <strong>
-                    <span class="badge ${getBadgeClass(hold.status)}">
-                        ${escapeHtml(formatStatus(hold.status))}
+
+                    <span
+                        class="badge ${getBadgeClass(
+                            hold.status
+                        )}"
+                    >
+                        ${escapeHtml(
+                            formatStatus(
+                                hold.status
+                            )
+                        )}
                     </span>
+
                 </strong>
 
             </div>
@@ -1785,12 +2776,18 @@ function renderDetailsModal(hold) {
 
             <div class="details-top-item">
 
-                <label>Age</label>
+                <label>
+                    Age
+                </label>
 
                 <strong>
-                    ${escapeHtml(formatDuration(
-                        getHoldDurationMs(hold)
-                    ))}
+                    ${escapeHtml(
+                        formatDuration(
+                            getHoldDurationMs(
+                                hold
+                            )
+                        )
+                    )}
                 </strong>
 
             </div>
@@ -1798,9 +2795,14 @@ function renderDetailsModal(hold) {
         </div>
 
 
+        <!-- ROLL INFORMATION -->
+
         <section class="details-section">
 
-            <h3>Roll Information</h3>
+            <h3>
+                Roll Information
+            </h3>
+
 
             <div class="hold-details">
 
@@ -1809,47 +2811,58 @@ function renderDetailsModal(hold) {
                     hold.jobName
                 )}
 
+
                 ${detailHtml(
                     "Net Weight",
-                    hold.netWeight
+                    hold.netWeight !== null &&
+                    hold.netWeight !== undefined &&
+                    hold.netWeight !== ""
                         ? `${hold.netWeight} kg`
                         : "-"
                 )}
+
 
                 ${detailHtml(
                     "Process",
                     hold.process
                 )}
 
+
                 ${detailHtml(
                     "Machine",
                     hold.machine
                 )}
+
 
                 ${detailHtml(
                     "Production Date",
                     hold.productionDate
                 )}
 
+
                 ${detailHtml(
                     "Shift",
                     hold.shift
                 )}
+
 
                 ${detailHtml(
                     "Operator",
                     hold.operator
                 )}
 
+
                 ${detailHtml(
                     "Supervisor",
                     hold.supervisor
                 )}
 
+
                 ${detailHtml(
                     "QC Inspector",
                     hold.qcInspector
                 )}
+
 
                 ${detailHtml(
                     "Current Stage",
@@ -1863,9 +2876,14 @@ function renderDetailsModal(hold) {
         </section>
 
 
+        <!-- HOLD DETAILS -->
+
         <section class="details-section">
 
-            <h3>Hold Details</h3>
+            <h3>
+                Hold Details
+            </h3>
+
 
             <div class="hold-details">
 
@@ -1874,12 +2892,14 @@ function renderDetailsModal(hold) {
                     hold.holdReason
                 )}
 
+
                 ${detailHtml(
                     "Hold Created",
                     formatDateTime(
                         hold.holdTimestamp
                     )
                 )}
+
 
                 ${detailHtml(
                     "Release / Closed",
@@ -1892,13 +2912,17 @@ function renderDetailsModal(hold) {
 
             </div>
 
+
             <div class="detail-item observation-box">
 
-                <label>Observation</label>
+                <label>
+                    Observation
+                </label>
 
                 <span>
                     ${escapeHtml(
-                        hold.observation || "-"
+                        hold.observation ||
+                        "-"
                     )}
                 </span>
 
@@ -1907,41 +2931,77 @@ function renderDetailsModal(hold) {
         </section>
 
 
+        <!-- PHOTO -->
+
         ${
             photoUrl
+
                 ? `
+
                     <section class="details-section">
 
-                        <h3>Roll Label Photo</h3>
+                        <h3>
+                            Roll Label Photo
+                        </h3>
+
 
                         <img
-                            src="${escapeHtml(photoUrl)}"
+                            src="${escapeHtml(
+                                photoUrl
+                            )}"
                             class="label-photo"
                             alt="Roll label photo"
                         >
 
                     </section>
+
                 `
+
                 : ""
         }
 
+
+        <!-- WORKFLOW ACTION -->
 
         ${
             !isClosed
-                ? renderActionPanel(hold)
+
+                ? renderActionPanel(
+                    hold
+                )
+
                 : ""
         }
 
 
+        <!-- SEND REMINDER -->
+
+        ${
+            !isClosed
+
+                ? renderReminderPanel(
+                    hold
+                )
+
+                : ""
+        }
+
+
+        <!-- TIMELINE -->
+
         <section class="details-section">
 
-            <h3>Action History</h3>
+            <h3>
+                Action History
+            </h3>
+
 
             ${renderTimeline(
                 hold.actions
             )}
 
         </section>
+
     `;
 }
 
@@ -1960,20 +3020,27 @@ function detailHtml(
         <div class="detail-item">
 
             <label>
-                ${escapeHtml(label)}
+                ${escapeHtml(
+                    label
+                )}
             </label>
 
             <span>
                 ${escapeHtml(
+
                     value === null ||
                     value === undefined ||
                     value === ""
+
                         ? "-"
+
                         : value
+
                 )}
             </span>
 
         </div>
+
     `;
 }
 
@@ -1982,16 +3049,29 @@ function detailHtml(
    ACTION PANEL
 ========================================================= */
 
-function renderActionPanel(hold) {
+function renderActionPanel(
+    hold
+) {
+
+
+    /* =====================================================
+       INSPECTION
+    ====================================================== */
 
     if (
         hold.workflowType ===
         "inspection"
     ) {
 
+
         if (
-            hold.status === "HOLD" ||
-            hold.currentStage === "INSPECTION"
+
+            hold.status ===
+                "HOLD" ||
+
+            hold.currentStage ===
+                "INSPECTION"
+
         ) {
 
             return `
@@ -2002,12 +3082,17 @@ function renderActionPanel(hold) {
                         Action Required: Inspection
                     </h3>
 
+
                     <div class="action-subtitle">
-                        Complete inspection before the roll can
-                        be released or rejected.
+
+                        Complete inspection before the roll
+                        can be released or rejected.
+
                     </div>
 
+
                     <div class="form-grid">
+
 
                         <div class="form-group">
 
@@ -2068,6 +3153,7 @@ function renderActionPanel(hold) {
                     </div>
 
                 </section>
+
             `;
         }
 
@@ -2085,12 +3171,17 @@ function renderActionPanel(hold) {
                         Action Required: Final Decision
                     </h3>
 
+
                     <div class="action-subtitle">
+
                         Inspection is complete. Decide whether
                         the roll should be released or rejected.
+
                     </div>
 
+
                     <div class="form-grid">
+
 
                         <div class="form-group">
 
@@ -2164,6 +3255,7 @@ function renderActionPanel(hold) {
                             Release for Production
                         </button>
 
+
                         <button
                             type="button"
                             class="btn-danger"
@@ -2175,6 +3267,7 @@ function renderActionPanel(hold) {
                     </div>
 
                 </section>
+
             `;
         }
     }
@@ -2218,7 +3311,8 @@ function renderActionPanel(hold) {
 
 
         if (
-            stage === "GM"
+            stage ===
+            "GM"
         ) {
 
             return shadeApprovalPanel(
@@ -2246,12 +3340,17 @@ function renderActionPanel(hold) {
                     Action Required: Review
                 </h3>
 
+
                 <div class="action-subtitle">
+
                     Review the GSM / Weight issue and decide
                     whether the roll can be released.
+
                 </div>
 
+
                 <div class="form-grid">
+
 
                     <div class="form-group">
 
@@ -2294,6 +3393,7 @@ function renderActionPanel(hold) {
                         Approve & Release
                     </button>
 
+
                     <button
                         type="button"
                         class="btn-danger"
@@ -2305,6 +3405,7 @@ function renderActionPanel(hold) {
                 </div>
 
             </section>
+
         `;
     }
 
@@ -2323,18 +3424,32 @@ function shadeApprovalPanel(
 ) {
 
     const nameId =
-        stage === "PRINTING_MANAGER"
+
+        stage ===
+        "PRINTING_MANAGER"
+
             ? "printingManagerName"
-            : stage === "QC_MANAGER"
+
+            : stage ===
+              "QC_MANAGER"
+
                 ? "qcManagerName"
+
                 : "gmName";
 
 
     const remarksId =
-        stage === "PRINTING_MANAGER"
+
+        stage ===
+        "PRINTING_MANAGER"
+
             ? "printingManagerRemarks"
-            : stage === "QC_MANAGER"
+
+            : stage ===
+              "QC_MANAGER"
+
                 ? "qcManagerRemarks"
+
                 : "gmRemarks";
 
 
@@ -2343,16 +3458,25 @@ function shadeApprovalPanel(
         <section class="action-panel">
 
             <h3>
-                Shade Approval: ${escapeHtml(stageName)}
+                Shade Approval:
+                ${escapeHtml(
+                    stageName
+                )}
             </h3>
 
+
             <div class="action-subtitle">
+
                 Shade mismatch requires approval from
-                ${escapeHtml(stageName)}.
+                ${escapeHtml(
+                    stageName
+                )}.
+
             </div>
 
 
             <div class="form-grid">
+
 
                 <div class="form-group">
 
@@ -2398,6 +3522,7 @@ function shadeApprovalPanel(
                     Approve
                 </button>
 
+
                 <button
                     type="button"
                     class="btn-danger"
@@ -2412,6 +3537,7 @@ function shadeApprovalPanel(
             </div>
 
         </section>
+
     `;
 }
 
@@ -2420,39 +3546,66 @@ function shadeApprovalPanel(
    TIMELINE
 ========================================================= */
 
-function renderTimeline(actions) {
+function renderTimeline(
+    actions
+) {
 
     if (!actions) {
 
         return `
+
             <div class="empty-state">
+
                 No action history available.
+
             </div>
+
         `;
     }
 
 
     const actionArray =
-        Object.entries(actions)
+        Object.entries(
+            actions
+        )
+
             .map(
                 ([id, action]) => ({
+
                     id,
+
                     ...action
+
                 })
             )
+
             .sort(
                 (a, b) =>
-                    Number(a.timestamp || 0) -
-                    Number(b.timestamp || 0)
+
+                    Number(
+                        a.timestamp ||
+                        0
+                    )
+
+                    -
+
+                    Number(
+                        b.timestamp ||
+                        0
+                    )
             );
 
 
     if (!actionArray.length) {
 
         return `
+
             <div class="empty-state">
+
                 No action history available.
+
             </div>
+
         `;
     }
 
@@ -2462,19 +3615,26 @@ function renderTimeline(actions) {
         <div class="timeline">
 
             ${actionArray
+
                 .map(
                     action => `
 
-                        <div class="timeline-item">
+                        <div
+                            class="timeline-item"
+                        >
 
                             <strong>
+
                                 ${escapeHtml(
                                     action.action ||
                                     "ACTION"
                                 )}
+
                             </strong>
 
+
                             <p>
+
                                 ${
                                     action.person
                                         ? escapeHtml(
@@ -2483,36 +3643,49 @@ function renderTimeline(actions) {
                                         : ""
                                 }
 
+
                                 ${
                                     action.person &&
                                     action.remarks
+
                                         ? " — "
+
                                         : ""
                                 }
+
 
                                 ${
                                     action.remarks
+
                                         ? escapeHtml(
                                             action.remarks
                                         )
+
                                         : ""
                                 }
+
                             </p>
 
+
                             <small>
+
                                 ${escapeHtml(
                                     formatDateTime(
                                         action.timestamp
                                     )
                                 )}
+
                             </small>
 
                         </div>
+
                     `
                 )
+
                 .join("")}
 
         </div>
+
     `;
 }
 
@@ -2526,7 +3699,10 @@ function createHoldCard(
 ) {
 
     const ageClass =
-        getAgeClass(hold);
+        getAgeClass(
+            hold
+        );
+
 
     const actionText =
         getWaitingActionText(
@@ -2540,27 +3716,36 @@ function createHoldCard(
             class="hold-card ${ageClass}"
         >
 
+
             <div class="hold-card-header">
+
 
                 <div class="hold-card-title">
 
                     <h3>
+
                         Job:
                         ${escapeHtml(
                             hold.jobNo
                         )}
+
                         —
+
                         Roll:
                         ${escapeHtml(
                             hold.rollNo
                         )}
+
                     </h3>
 
+
                     <p>
+
                         ${escapeHtml(
                             hold.jobName ||
                             "No Job Name"
                         )}
+
                     </p>
 
                 </div>
@@ -2571,11 +3756,13 @@ function createHoldCard(
                         hold.status
                     )}"
                 >
+
                     ${escapeHtml(
                         formatStatus(
                             hold.status
                         )
                     )}
+
                 </span>
 
             </div>
@@ -2583,30 +3770,41 @@ function createHoldCard(
 
             <div class="hold-details">
 
+
                 ${detailHtml(
                     "Process",
                     hold.process
                 )}
+
 
                 ${detailHtml(
                     "Machine",
                     hold.machine
                 )}
 
+
                 ${detailHtml(
                     "Weight",
-                    hold.netWeight
+
+                    hold.netWeight !== null &&
+                    hold.netWeight !== undefined &&
+                    hold.netWeight !== ""
+
                         ? `${hold.netWeight} kg`
+
                         : "-"
                 )}
+
 
                 ${detailHtml(
                     "Reason",
                     hold.holdReason
                 )}
 
+
                 ${detailHtml(
                     "Age",
+
                     formatDuration(
                         getHoldDurationMs(
                             hold
@@ -2614,30 +3812,37 @@ function createHoldCard(
                     )
                 )}
 
+
                 ${detailHtml(
                     "Stage",
+
                     formatStage(
                         hold.currentStage
                     )
                 )}
+
 
                 ${detailHtml(
                     "Production Date",
                     hold.productionDate
                 )}
 
+
                 ${detailHtml(
                     "Shift",
                     hold.shift
                 )}
+
 
                 ${detailHtml(
                     "QC Inspector",
                     hold.qcInspector
                 )}
 
+
                 ${detailHtml(
                     "Hold Time",
+
                     formatDateTime(
                         hold.holdTimestamp
                     )
@@ -2648,11 +3853,15 @@ function createHoldCard(
 
             <div class="hold-card-footer">
 
+
                 <div class="waiting-action">
+
                     ${escapeHtml(
                         actionText
                     )}
+
                 </div>
+
 
                 <button
                     type="button"
@@ -2669,6 +3878,7 @@ function createHoldCard(
             </div>
 
         </article>
+
     `;
 }
 
@@ -2682,7 +3892,9 @@ function createHistoryCard(
 ) {
 
     const ageClass =
-        getAgeClass(hold);
+        getAgeClass(
+            hold
+        );
 
 
     return `
@@ -2691,27 +3903,36 @@ function createHistoryCard(
             class="hold-card ${ageClass}"
         >
 
+
             <div class="hold-card-header">
+
 
                 <div class="hold-card-title">
 
                     <h3>
+
                         Job:
                         ${escapeHtml(
                             hold.jobNo
                         )}
+
                         —
+
                         Roll:
                         ${escapeHtml(
                             hold.rollNo
                         )}
+
                     </h3>
 
+
                     <p>
+
                         ${escapeHtml(
                             hold.jobName ||
                             "No Job Name"
                         )}
+
                     </p>
 
                 </div>
@@ -2722,11 +3943,13 @@ function createHistoryCard(
                         hold.status
                     )}"
                 >
+
                     ${escapeHtml(
                         formatStatus(
                             hold.status
                         )
                     )}
+
                 </span>
 
             </div>
@@ -2734,30 +3957,41 @@ function createHistoryCard(
 
             <div class="hold-details">
 
+
                 ${detailHtml(
                     "Process",
                     hold.process
                 )}
+
 
                 ${detailHtml(
                     "Machine",
                     hold.machine
                 )}
 
+
                 ${detailHtml(
                     "Weight",
-                    hold.netWeight
+
+                    hold.netWeight !== null &&
+                    hold.netWeight !== undefined &&
+                    hold.netWeight !== ""
+
                         ? `${hold.netWeight} kg`
+
                         : "-"
                 )}
+
 
                 ${detailHtml(
                     "Reason",
                     hold.holdReason
                 )}
 
+
                 ${detailHtml(
                     "Duration",
+
                     formatDuration(
                         getHoldDurationMs(
                             hold
@@ -2765,8 +3999,10 @@ function createHistoryCard(
                     )
                 )}
 
+
                 ${detailHtml(
                     "Closed",
+
                     formatDateTime(
                         hold.releaseTimestamp
                     )
@@ -2777,12 +4013,15 @@ function createHistoryCard(
 
             <div class="hold-card-footer">
 
+
                 <div class="waiting-action">
 
                     ${
                         hold.status ===
                         "RELEASED"
+
                             ? "Released for production"
+
                             : "Roll rejected"
                     }
 
@@ -2804,6 +4043,7 @@ function createHistoryCard(
             </div>
 
         </article>
+
     `;
 }
 
@@ -2847,6 +4087,7 @@ function getWaitingActionText(
             return "Inspection required";
         }
 
+
         if (
             hold.status ===
             "INSPECTION_DONE"
@@ -2863,10 +4104,13 @@ function getWaitingActionText(
     ) {
 
         return (
+
             "Waiting for " +
+
             formatStage(
                 hold.currentStage
             )
+
         );
     }
 
@@ -2897,7 +4141,9 @@ function matchesFilters(
             searchInput?.value ||
             ""
         )
+
             .trim()
+
             .toLowerCase();
 
 
@@ -2905,9 +4151,11 @@ function matchesFilters(
         processFilter?.value ||
         "";
 
+
     const status =
         statusFilter?.value ||
         "";
+
 
     const reason =
         reasonFilter?.value ||
@@ -2939,8 +4187,11 @@ function matchesFilters(
             hold.observation
 
         ]
+
             .filter(Boolean)
+
             .join(" ")
+
             .toLowerCase();
 
 
@@ -2956,8 +4207,12 @@ function matchesFilters(
 
 
     if (
+
         process &&
-        hold.process !== process
+
+        hold.process !==
+            process
+
     ) {
 
         return false;
@@ -2965,8 +4220,12 @@ function matchesFilters(
 
 
     if (
+
         status &&
-        hold.status !== status
+
+        hold.status !==
+            status
+
     ) {
 
         return false;
@@ -2974,8 +4233,12 @@ function matchesFilters(
 
 
     if (
+
         reason &&
-        hold.holdReason !== reason
+
+        hold.holdReason !==
+            reason
+
     ) {
 
         return false;
@@ -2995,19 +4258,27 @@ function sortHoldsDescending(
 ) {
 
     return list.sort(
+
         (a, b) =>
+
             Number(
-                b.holdTimestamp || 0
-            ) -
-            Number(
-                a.holdTimestamp || 0
+                b.holdTimestamp ||
+                0
             )
+
+            -
+
+            Number(
+                a.holdTimestamp ||
+                0
+            )
+
     );
 }
 
 
 /* =========================================================
-   GET HOLD ARRAY
+   HOLD ARRAY
 ========================================================= */
 
 function getHoldArray() {
@@ -3015,12 +4286,13 @@ function getHoldArray() {
     return Object.values(
         holds || {}
     )
+
         .filter(Boolean);
 }
 
 
 /* =========================================================
-   RENDER ACTIVE HOLDS
+   ACTIVE HOLDS
 ========================================================= */
 
 function renderActiveHolds() {
@@ -3031,14 +4303,19 @@ function renderActiveHolds() {
 
 
     let active =
+
         getHoldArray()
+
             .filter(
                 hold =>
+
                     hold.status !==
                         "RELEASED" &&
+
                     hold.status !==
                         "REJECTED"
             )
+
             .filter(
                 matchesFilters
             );
@@ -3058,28 +4335,35 @@ function renderActiveHolds() {
 
                 ${
                     getHoldArray().length
+
                         ? "No active holds match the selected filters."
+
                         : "No active QC holds."
                 }
 
             </div>
+
         `;
+
 
         return;
     }
 
 
     holdList.innerHTML =
+
         active
+
             .map(
                 createHoldCard
             )
+
             .join("");
 }
 
 
 /* =========================================================
-   RENDER HISTORY
+   HISTORY
 ========================================================= */
 
 function renderHistory() {
@@ -3090,31 +4374,55 @@ function renderHistory() {
 
 
     let history =
+
         getHoldArray()
+
             .filter(
+
                 hold =>
+
                     hold.status ===
                         "RELEASED" ||
+
                     hold.status ===
                         "REJECTED"
+
             )
+
             .filter(
                 matchesFilters
             )
+
             .sort(
+
                 (a, b) =>
+
                     Number(
+
                         b.releaseTimestamp ||
+
                         b.updatedAt ||
+
                         b.holdTimestamp ||
+
                         0
-                    ) -
-                    Number(
-                        a.releaseTimestamp ||
-                        a.updatedAt ||
-                        a.holdTimestamp ||
-                        0
+
                     )
+
+                    -
+
+                    Number(
+
+                        a.releaseTimestamp ||
+
+                        a.updatedAt ||
+
+                        a.holdTimestamp ||
+
+                        0
+
+                    )
+
             );
 
 
@@ -3128,17 +4436,22 @@ function renderHistory() {
                 rolls found.
 
             </div>
+
         `;
+
 
         return;
     }
 
 
     historyList.innerHTML =
+
         history
+
             .map(
                 createHistoryCard
             )
+
             .join("");
 }
 
@@ -3154,77 +4467,119 @@ function updateSummary() {
 
 
     const active =
+
         all.filter(
+
             hold =>
+
                 hold.status !==
                     "RELEASED" &&
+
                 hold.status !==
                     "REJECTED"
+
         );
 
 
     const released =
+
         all.filter(
+
             hold =>
+
                 hold.status ===
                 "RELEASED"
+
         );
 
 
     const over24 =
+
         active.filter(
+
             hold =>
+
                 getHoldDurationMs(
                     hold
-                ) >=
-                24 * 60 * 60 * 1000
+                )
+
+                >=
+
+                24 *
+                60 *
+                60 *
+                1000
+
         );
 
 
     const over48 =
+
         active.filter(
+
             hold =>
+
                 getHoldDurationMs(
                     hold
-                ) >=
-                48 * 60 * 60 * 1000
+                )
+
+                >=
+
+                48 *
+                60 *
+                60 *
+                1000
+
         );
 
 
     const totalWeight =
+
         active.reduce(
+
             (
                 total,
                 hold
             ) =>
+
                 total +
+
                 (
                     Number(
                         hold.netWeight
                     ) || 0
                 ),
+
             0
+
         );
 
 
     activeHoldsEl.textContent =
         active.length;
 
+
     actionRequiredEl.textContent =
+
         active.filter(
             requiresAction
         ).length;
 
+
     over24El.textContent =
         over24.length;
+
 
     over48El.textContent =
         over48.length;
 
+
     releasedEl.textContent =
         released.length;
 
+
     totalWeightEl.textContent =
+
         `${totalWeight.toFixed(2)} kg`;
 }
 
@@ -3243,11 +4598,15 @@ function renderAll() {
 
 
     if (
+
         currentHoldId &&
+
         holds[currentHoldId] &&
+
         !detailsModal.classList.contains(
             "hidden"
         )
+
     ) {
 
         renderDetailsModal(
@@ -3270,34 +4629,50 @@ function switchTab(
 
 
     document
+
         .querySelectorAll(
             ".tabs .tab"
         )
+
         .forEach(
+
             tab => {
 
                 tab.classList.toggle(
+
                     "active",
+
                     tab.dataset.tab ===
                         tabName
+
                 );
+
             }
+
         );
 
 
     document
+
         .querySelectorAll(
             "[data-tab-content]"
         )
+
         .forEach(
+
             section => {
 
                 section.classList.toggle(
+
                     "hidden",
+
                     section.dataset.tabContent !==
                         tabName
+
                 );
+
             }
+
         );
 }
 
@@ -3316,22 +4691,27 @@ function loadHolds() {
 
 
     onValue(
+
         holdsRef,
+
         snapshot => {
 
             holds =
                 snapshot.val() ||
                 {};
 
+
             renderAll();
 
         },
+
         error => {
 
             console.error(
                 "Firebase read error:",
                 error
             );
+
 
             holdList.innerHTML = `
 
@@ -3345,8 +4725,10 @@ function loadHolds() {
                     and database rules.
 
                 </div>
+
             `;
         }
+
     );
 }
 
@@ -3385,17 +4767,24 @@ holdForm.addEventListener(
 );
 
 
-/* TABS */
+/* =========================================================
+   TABS
+========================================================= */
 
 document
+
     .querySelectorAll(
         ".tabs .tab"
     )
+
     .forEach(
+
         tab => {
 
             tab.addEventListener(
+
                 "click",
+
                 () => {
 
                     switchTab(
@@ -3403,13 +4792,17 @@ document
                     );
 
                 }
+
             );
 
         }
+
     );
 
 
-/* FILTERS */
+/* =========================================================
+   FILTERS
+========================================================= */
 
 [
     searchInput,
@@ -3417,17 +4810,21 @@ document
     statusFilter,
     reasonFilter
 ]
+
     .forEach(
+
         element => {
 
             if (!element) {
                 return;
             }
 
+
             element.addEventListener(
                 "input",
                 renderAll
             );
+
 
             element.addEventListener(
                 "change",
@@ -3435,13 +4832,18 @@ document
             );
 
         }
+
     );
 
 
-/* MODAL BACKGROUND CLICK */
+/* =========================================================
+   MODAL BACKGROUND CLICK
+========================================================= */
 
 addHoldModal.addEventListener(
+
     "click",
+
     event => {
 
         if (
@@ -3451,12 +4853,16 @@ addHoldModal.addEventListener(
 
             closeAddHoldModal();
         }
+
     }
+
 );
 
 
 detailsModal.addEventListener(
+
     "click",
+
     event => {
 
         if (
@@ -3466,28 +4872,37 @@ detailsModal.addEventListener(
 
             closeDetailsModal();
         }
+
     }
+
 );
 
 
-/* ESCAPE */
+/* =========================================================
+   ESCAPE
+========================================================= */
 
 document.addEventListener(
+
     "keydown",
+
     event => {
 
         if (
             event.key !==
             "Escape"
         ) {
+
             return;
         }
 
 
         if (
+
             !addHoldModal.classList.contains(
                 "hidden"
             )
+
         ) {
 
             closeAddHoldModal();
@@ -3497,14 +4912,18 @@ document.addEventListener(
 
 
         if (
+
             !detailsModal.classList.contains(
                 "hidden"
             )
+
         ) {
 
             closeDetailsModal();
         }
+
     }
+
 );
 
 
@@ -3513,9 +4932,11 @@ document.addEventListener(
 ========================================================= */
 
 setInterval(
+
     () => {
 
         updateSummary();
+
 
         if (
             currentTab ===
@@ -3523,8 +4944,8 @@ setInterval(
         ) {
 
             renderActiveHolds();
-
         }
+
 
         if (
             currentTab ===
@@ -3536,11 +4957,15 @@ setInterval(
 
 
         if (
+
             currentHoldId &&
+
             !detailsModal.classList.contains(
                 "hidden"
             ) &&
+
             holds[currentHoldId]
+
         ) {
 
             renderDetailsModal(
@@ -3549,7 +4974,9 @@ setInterval(
         }
 
     },
+
     60000
+
 );
 
 
