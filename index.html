@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+
     <meta charset="UTF-8">
 
     <meta
@@ -9,150 +11,192 @@
     >
 
     <meta
-        name="theme-color"
-        content="#10233f"
+        name="description"
+        content="APEX QC Hold Roll Monitor"
     >
 
-    <title>QC Hold Roll Monitor</title>
+    <title>APEX QC HOLD ROLL MONITOR</title>
 
-    <link rel="stylesheet" href="style.css">
+    <link
+        rel="stylesheet"
+        href="style.css"
+    >
+
 </head>
+
 
 <body>
 
-<!-- =========================================================
-     HEADER
-========================================================= -->
-
-<header>
-
-    <div class="header-left">
-        <h1>QC HOLD ROLL MONITOR</h1>
-
-        <p>
-            Apex Packing Products Pvt. Ltd.
-        </p>
-    </div>
-
-    <button
-        id="addHoldBtn"
-        type="button"
-        class="primary-btn"
-    >
-        + Add Hold
-    </button>
-
-</header>
-
-
-<!-- =========================================================
-     MAIN
-========================================================= -->
-
-<main>
-
     <!-- =====================================================
-         SUMMARY
+         HEADER
     ====================================================== -->
 
-    <section class="summary-grid">
+    <header>
 
-        <div class="summary-card">
-            <h3>Active Holds</h3>
-            <div
-                id="activeHolds"
-                class="value"
-            >
-                0
+        <div class="header-content">
+
+            <div>
+
+                <h1>
+                    QC HOLD ROLL MONITOR
+                </h1>
+
+                <p>
+                    APEX PACKING PRODUCTS PVT. LTD.
+                </p>
+
             </div>
+
+
+            <button
+                type="button"
+                id="addHoldBtn"
+                class="btn-primary header-add-btn"
+            >
+                + Add QC Hold
+            </button>
+
         </div>
 
-        <div class="summary-card">
-            <h3>Action Required</h3>
-            <div
-                id="actionRequired"
-                class="value"
-            >
-                0
-            </div>
-        </div>
-
-        <div class="summary-card">
-            <h3>Over 24 Hours</h3>
-            <div
-                id="over24"
-                class="value"
-            >
-                0
-            </div>
-        </div>
-
-        <div class="summary-card">
-            <h3>Over 48 Hours</h3>
-            <div
-                id="over48"
-                class="value"
-            >
-                0
-            </div>
-        </div>
-
-        <div class="summary-card">
-            <h3>Released</h3>
-            <div
-                id="released"
-                class="value"
-            >
-                0
-            </div>
-        </div>
-
-        <div class="summary-card">
-            <h3>Active Weight</h3>
-            <div
-                id="totalWeight"
-                class="value"
-            >
-                0 kg
-            </div>
-        </div>
-
-    </section>
+    </header>
 
 
     <!-- =====================================================
-         TABS
+         MAIN
     ====================================================== -->
 
-    <div class="tabs">
-
-        <button
-            type="button"
-            class="tab active"
-            data-tab="active"
-        >
-            Active Holds
-        </button>
-
-        <button
-            type="button"
-            class="tab"
-            data-tab="history"
-        >
-            Hold History
-        </button>
-
-    </div>
+    <main>
 
 
-    <!-- =====================================================
-         ACTIVE TAB
-    ====================================================== -->
+        <!-- =================================================
+             SUMMARY
+        ================================================== -->
 
-    <section
-        data-tab-content="active"
-        class="tab-content"
-    >
+        <section class="summary-grid">
+
+            <div class="summary-card">
+
+                <h3>
+                    Active Holds
+                </h3>
+
+                <div
+                    class="value"
+                    id="activeHolds"
+                >
+                    0
+                </div>
+
+            </div>
+
+
+            <div class="summary-card">
+
+                <h3>
+                    Action Required
+                </h3>
+
+                <div
+                    class="value"
+                    id="actionRequired"
+                >
+                    0
+                </div>
+
+            </div>
+
+
+            <div class="summary-card warning-card">
+
+                <h3>
+                    Over 24 Hours
+                </h3>
+
+                <div
+                    class="value"
+                    id="over24"
+                >
+                    0
+                </div>
+
+            </div>
+
+
+            <div class="summary-card critical-card">
+
+                <h3>
+                    Over 48 Hours
+                </h3>
+
+                <div
+                    class="value"
+                    id="over48"
+                >
+                    0
+                </div>
+
+            </div>
+
+
+            <div class="summary-card">
+
+                <h3>
+                    Released
+                </h3>
+
+                <div
+                    class="value"
+                    id="released"
+                >
+                    0
+                </div>
+
+            </div>
+
+
+            <div class="summary-card">
+
+                <h3>
+                    Active Weight
+                </h3>
+
+                <div
+                    class="value"
+                    id="totalWeight"
+                >
+                    0.00 kg
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =================================================
+             TABS
+        ================================================== -->
+
+        <div class="tabs">
+
+            <button
+                type="button"
+                class="tab active"
+                data-tab="active"
+            >
+                Active Holds
+            </button>
+
+
+            <button
+                type="button"
+                class="tab"
+                data-tab="history"
+            >
+                History
+            </button>
+
+        </div>
+
 
         <!-- =================================================
              FILTERS
@@ -160,174 +204,248 @@
 
         <section class="filters">
 
-            <input
-                type="search"
-                id="searchInput"
-                placeholder="Search Job No, Roll No, Job Name..."
-                autocomplete="off"
-            >
+            <div class="filter-group search-filter">
 
-            <select id="processFilter">
-                <option value="">All Processes</option>
-                <option value="Printing">Printing</option>
-                <option value="Lamination">Lamination</option>
-                <option value="Slitting">Slitting</option>
-                <option value="Doctoring">Doctoring</option>
-                <option value="Inspection">Inspection</option>
-                <option value="Extrusion Coating">
-                    Extrusion Coating
-                </option>
-            </select>
+                <label for="searchInput">
+                    Search
+                </label>
 
-            <select id="statusFilter">
-                <option value="">All Statuses</option>
-                <option value="HOLD">Hold</option>
-                <option value="INSPECTION">Inspection</option>
-                <option value="INSPECTION_DONE">
-                    Inspection Done
-                </option>
-                <option value="SHADE_APPROVAL">
-                    Shade Approval
-                </option>
-                <option value="REVIEW">Review</option>
-                <option value="RELEASED">Released</option>
-                <option value="REJECTED">Rejected</option>
-            </select>
+                <input
+                    type="search"
+                    id="searchInput"
+                    placeholder="Job No., Roll No., Job Name, Machine..."
+                >
 
-            <select id="reasonFilter">
-                <option value="">All Hold Reasons</option>
-                <option value="Insect / Foreign Material">
-                    Insect / Foreign Material
-                </option>
-                <option value="Line / Streak">
-                    Line / Streak
-                </option>
-                <option value="Shade Mismatch">
-                    Shade Mismatch
-                </option>
-                <option value="GSM / Weight">
-                    GSM / Weight
-                </option>
-                <option value="Printing Defect">
-                    Printing Defect
-                </option>
-                <option value="Lamination Defect">
-                    Lamination Defect
-                </option>
-                <option value="Slitting Defect">
-                    Slitting Defect
-                </option>
-                <option value="Adhesion">
-                    Adhesion
-                </option>
-                <option value="Physical Damage">
-                    Physical Damage
-                </option>
-                <option value="Other">
-                    Other
-                </option>
-            </select>
+            </div>
+
+
+            <div class="filter-group">
+
+                <label for="processFilter">
+                    Process
+                </label>
+
+                <select id="processFilter">
+
+                    <option value="">
+                        All Processes
+                    </option>
+
+                    <option value="Printing">
+                        Printing
+                    </option>
+
+                    <option value="Lamination">
+                        Lamination
+                    </option>
+
+                    <option value="Slitting">
+                        Slitting
+                    </option>
+
+                    <option value="Doctoring">
+                        Doctoring
+                    </option>
+
+                    <option value="Inspection">
+                        Inspection
+                    </option>
+
+                    <option value="Extrusion Coating">
+                        Extrusion Coating
+                    </option>
+
+                    <option value="Other">
+                        Other
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <div class="filter-group">
+
+                <label for="statusFilter">
+                    Status
+                </label>
+
+                <select id="statusFilter">
+
+                    <option value="">
+                        All Statuses
+                    </option>
+
+                    <option value="HOLD">
+                        HOLD
+                    </option>
+
+                    <option value="INSPECTION_DONE">
+                        INSPECTION DONE
+                    </option>
+
+                    <option value="SHADE_APPROVAL">
+                        SHADE APPROVAL
+                    </option>
+
+                    <option value="REVIEW">
+                        REVIEW
+                    </option>
+
+                    <option value="RELEASED">
+                        RELEASED
+                    </option>
+
+                    <option value="REJECTED">
+                        REJECTED
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <div class="filter-group">
+
+                <label for="reasonFilter">
+                    Hold Reason
+                </label>
+
+                <select id="reasonFilter">
+
+                    <option value="">
+                        All Reasons
+                    </option>
+
+                    <option value="Shade Mismatch">
+                        Shade Mismatch
+                    </option>
+
+                    <option value="GSM / Weight">
+                        GSM / Weight
+                    </option>
+
+                    <option value="Printing Defect">
+                        Printing Defect
+                    </option>
+
+                    <option value="Lamination Defect">
+                        Lamination Defect
+                    </option>
+
+                    <option value="Slitting Defect">
+                        Slitting Defect
+                    </option>
+
+                    <option value="Material Issue">
+                        Material Issue
+                    </option>
+
+                    <option value="Other">
+                        Other
+                    </option>
+
+                </select>
+
+            </div>
 
         </section>
 
 
         <!-- =================================================
-             ACTIVE HOLD LIST
+             ACTIVE TAB
         ================================================== -->
 
-        <section
-            id="holdList"
-            class="hold-list"
-        ></section>
+        <div
+            data-tab-content="active"
+        >
 
-    </section>
-
-
-    <!-- =====================================================
-         HISTORY TAB
-    ====================================================== -->
-
-    <section
-        data-tab-content="history"
-        class="tab-content hidden"
-    >
-
-        <section class="history-header">
-
-            <div>
-                <h2>Hold History</h2>
-
-                <p>
-                    Released and rejected rolls
-                </p>
-            </div>
-
-        </section>
-
-        <section
-            id="historyList"
-            class="hold-list"
-        ></section>
-
-    </section>
-
-</main>
-
-
-<!-- =========================================================
-     ADD HOLD MODAL
-========================================================= -->
-
-<div
-    id="addHoldModal"
-    class="modal hidden"
-    aria-hidden="true"
->
-
-    <div
-        class="modal-content"
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="addHoldTitle"
-    >
-
-        <div class="modal-header">
-
-            <div>
-                <h2 id="addHoldTitle">
-                    Add QC Hold
-                </h2>
-
-                <p>
-                    Enter details of the roll placed on hold
-                </p>
-            </div>
-
-            <button
-                type="button"
-                id="closeAddHold"
-                class="close-modal"
-                aria-label="Close"
+            <section
+                id="holdList"
+                class="hold-list"
             >
-                ×
-            </button>
+
+                <div class="empty-state">
+                    Loading QC hold data...
+                </div>
+
+            </section>
 
         </div>
 
 
-        <div class="modal-body">
+        <!-- =================================================
+             HISTORY TAB
+        ================================================== -->
 
-            <form id="holdForm">
+        <div
+            data-tab-content="history"
+            class="hidden"
+        >
 
-                <!-- =================================================
-                     BASIC INFORMATION
-                ================================================== -->
+            <section
+                id="historyList"
+                class="hold-list"
+            >
 
-                <div class="details-section">
+                <div class="empty-state">
+                    No history available.
+                </div>
 
-                    <h3>Roll Information</h3>
+            </section>
+
+        </div>
+
+    </main>
+
+
+    <!-- =====================================================
+         ADD HOLD MODAL
+    ====================================================== -->
+
+    <div
+        id="addHoldModal"
+        class="modal hidden"
+        aria-hidden="true"
+    >
+
+        <div class="modal-content">
+
+            <div class="modal-header">
+
+                <div>
+
+                    <h2>
+                        Add QC Hold
+                    </h2>
+
+                    <p>
+                        Record a roll placed on QC hold.
+                    </p>
+
+                </div>
+
+
+                <button
+                    type="button"
+                    id="closeAddHold"
+                    class="close-modal"
+                    aria-label="Close"
+                >
+                    ×
+                </button>
+
+            </div>
+
+
+            <div class="modal-body">
+
+                <form id="holdForm">
 
                     <div class="form-grid">
+
+
+                        <!-- JOB NUMBER -->
 
                         <div class="form-group">
 
@@ -339,12 +457,14 @@
                                 type="text"
                                 id="jobNo"
                                 name="jobNo"
+                                placeholder="Enter Job Number"
                                 required
-                                autocomplete="off"
                             >
 
                         </div>
 
+
+                        <!-- JOB NAME -->
 
                         <div class="form-group">
 
@@ -356,11 +476,13 @@
                                 type="text"
                                 id="jobName"
                                 name="jobName"
-                                autocomplete="off"
+                                placeholder="Enter Job Name"
                             >
 
                         </div>
 
+
+                        <!-- ROLL NUMBER -->
 
                         <div class="form-group">
 
@@ -372,12 +494,14 @@
                                 type="text"
                                 id="rollNo"
                                 name="rollNo"
+                                placeholder="Enter Roll Number"
                                 required
-                                autocomplete="off"
                             >
 
                         </div>
 
+
+                        <!-- NET WEIGHT -->
 
                         <div class="form-group">
 
@@ -391,24 +515,13 @@
                                 name="netWeight"
                                 min="0"
                                 step="0.01"
+                                placeholder="0.00"
                             >
 
                         </div>
 
-                    </div>
 
-                </div>
-
-
-                <!-- =================================================
-                     PRODUCTION INFORMATION
-                ================================================== -->
-
-                <div class="details-section">
-
-                    <h3>Production Information</h3>
-
-                    <div class="form-grid">
+                        <!-- PROCESS -->
 
                         <div class="form-group">
 
@@ -450,10 +563,16 @@
                                     Extrusion Coating
                                 </option>
 
+                                <option value="Other">
+                                    Other
+                                </option>
+
                             </select>
 
                         </div>
 
+
+                        <!-- MACHINE -->
 
                         <div class="form-group">
 
@@ -465,11 +584,13 @@
                                 type="text"
                                 id="machine"
                                 name="machine"
-                                autocomplete="off"
+                                placeholder="Machine Number"
                             >
 
                         </div>
 
+
+                        <!-- PRODUCTION DATE -->
 
                         <div class="form-group">
 
@@ -487,6 +608,8 @@
                         </div>
 
 
+                        <!-- SHIFT -->
+
                         <div class="form-group">
 
                             <label for="shift">
@@ -503,15 +626,15 @@
                                     Select Shift
                                 </option>
 
-                                <option value="1st">
+                                <option value="1st Shift">
                                     1st Shift
                                 </option>
 
-                                <option value="2nd">
+                                <option value="2nd Shift">
                                     2nd Shift
                                 </option>
 
-                                <option value="3rd">
+                                <option value="3rd Shift">
                                     3rd Shift
                                 </option>
 
@@ -519,20 +642,8 @@
 
                         </div>
 
-                    </div>
 
-                </div>
-
-
-                <!-- =================================================
-                     PEOPLE
-                ================================================== -->
-
-                <div class="details-section">
-
-                    <h3>Personnel</h3>
-
-                    <div class="form-grid">
+                        <!-- OPERATOR -->
 
                         <div class="form-group">
 
@@ -544,11 +655,13 @@
                                 type="text"
                                 id="operator"
                                 name="operator"
-                                autocomplete="off"
+                                placeholder="Operator Name"
                             >
 
                         </div>
 
+
+                        <!-- SUPERVISOR -->
 
                         <div class="form-group">
 
@@ -560,11 +673,13 @@
                                 type="text"
                                 id="supervisor"
                                 name="supervisor"
-                                autocomplete="off"
+                                placeholder="Supervisor Name"
                             >
 
                         </div>
 
+
+                        <!-- QC INSPECTOR -->
 
                         <div class="form-group">
 
@@ -576,26 +691,14 @@
                                 type="text"
                                 id="qcInspector"
                                 name="qcInspector"
+                                placeholder="QC Inspector Name"
                                 required
-                                autocomplete="off"
                             >
 
                         </div>
 
-                    </div>
 
-                </div>
-
-
-                <!-- =================================================
-                     HOLD REASON
-                ================================================== -->
-
-                <div class="details-section">
-
-                    <h3>Hold Details</h3>
-
-                    <div class="form-grid">
+                        <!-- HOLD REASON -->
 
                         <div class="form-group">
 
@@ -611,14 +714,6 @@
 
                                 <option value="">
                                     Select Hold Reason
-                                </option>
-
-                                <option value="Insect / Foreign Material">
-                                    Insect / Foreign Material
-                                </option>
-
-                                <option value="Line / Streak">
-                                    Line / Streak
                                 </option>
 
                                 <option value="Shade Mismatch">
@@ -641,12 +736,8 @@
                                     Slitting Defect
                                 </option>
 
-                                <option value="Adhesion">
-                                    Adhesion
-                                </option>
-
-                                <option value="Physical Damage">
-                                    Physical Damage
+                                <option value="Material Issue">
+                                    Material Issue
                                 </option>
 
                                 <option value="Other">
@@ -658,6 +749,8 @@
                         </div>
 
 
+                        <!-- OBSERVATION -->
+
                         <div class="form-group full-width">
 
                             <label for="observation">
@@ -667,147 +760,135 @@
                             <textarea
                                 id="observation"
                                 name="observation"
-                                required
+                                rows="4"
                                 placeholder="Enter detailed observation..."
+                                required
                             ></textarea>
+
+                        </div>
+
+
+                        <!-- PHOTO -->
+
+                        <div class="form-group full-width">
+
+                            <label for="labelPhoto">
+                                Roll Label Photo *
+                            </label>
+
+                            <input
+                                type="file"
+                                id="labelPhoto"
+                                name="labelPhoto"
+                                accept="image/*"
+                                required
+                            >
+
+                            <div
+                                id="photoPreview"
+                                class="photo-preview"
+                            ></div>
+
+                            <div
+                                id="uploadProgress"
+                                class="upload-progress"
+                            ></div>
 
                         </div>
 
                     </div>
 
-                </div>
 
+                    <!-- FORM BUTTONS -->
 
-                <!-- =================================================
-                     LABEL PHOTO
-                ================================================== -->
+                    <div class="action-buttons form-actions">
 
-                <div class="details-section">
-
-                    <h3>Roll Label Photo</h3>
-
-                    <div class="form-group">
-
-                        <label for="labelPhoto">
-                            Label Photo *
-                        </label>
-
-                        <input
-                            type="file"
-                            id="labelPhoto"
-                            name="labelPhoto"
-                            accept="image/*"
-                            capture="environment"
-                            required
+                        <button
+                            type="button"
+                            id="cancelHold"
+                            class="btn-secondary"
                         >
+                            Cancel
+                        </button>
 
-                        <div
-                            id="photoPreview"
-                            class="photo-preview"
-                        ></div>
 
-                        <div
-                            id="uploadProgress"
-                            class="upload-progress"
-                        ></div>
+                        <button
+                            type="submit"
+                            id="saveHoldBtn"
+                            class="btn-primary"
+                        >
+                            Save Hold
+                        </button>
 
                     </div>
 
-                </div>
+                </form>
 
-
-                <!-- =================================================
-                     FORM BUTTONS
-                ================================================== -->
-
-                <div class="action-buttons">
-
-                    <button
-                        type="button"
-                        id="cancelHold"
-                        class="btn-secondary"
-                    >
-                        Cancel
-                    </button>
-
-                    <button
-                        type="submit"
-                        class="btn-primary"
-                        id="saveHoldBtn"
-                    >
-                        Save Hold
-                    </button>
-
-                </div>
-
-            </form>
-
-        </div>
-
-    </div>
-
-</div>
-
-
-<!-- =========================================================
-     DETAILS MODAL
-========================================================= -->
-
-<div
-    id="detailsModal"
-    class="modal hidden"
-    aria-hidden="true"
->
-
-    <div
-        class="modal-content"
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="detailsTitle"
-    >
-
-        <div class="modal-header">
-
-            <div>
-                <h2 id="detailsTitle">
-                    Hold Details
-                </h2>
-
-                <p>
-                    QC Hold Roll Information
-                </p>
             </div>
 
-            <button
-                type="button"
-                id="closeDetails"
-                class="close-modal"
-                aria-label="Close"
-            >
-                ×
-            </button>
-
         </div>
-
-
-        <div
-            id="detailsContent"
-            class="modal-body"
-        ></div>
 
     </div>
 
-</div>
+
+    <!-- =====================================================
+         DETAILS MODAL
+    ====================================================== -->
+
+    <div
+        id="detailsModal"
+        class="modal hidden"
+        aria-hidden="true"
+    >
+
+        <div class="modal-content details-modal-content">
+
+            <div class="modal-header">
+
+                <div>
+
+                    <h2>
+                        QC Hold Details
+                    </h2>
+
+                    <p>
+                        Complete roll information and workflow.
+                    </p>
+
+                </div>
 
 
-<!-- =========================================================
-     JAVASCRIPT
-========================================================= -->
+                <button
+                    type="button"
+                    id="closeDetails"
+                    class="close-modal"
+                    aria-label="Close"
+                >
+                    ×
+                </button>
 
-<script
-    type="module"
-    src="app.js"
-></script>
+            </div>
+
+
+            <div
+                id="detailsContent"
+                class="modal-body"
+            ></div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         APPLICATION
+    ====================================================== -->
+
+    <script
+        type="module"
+        src="app.js"
+    ></script>
 
 </body>
+
 </html>
