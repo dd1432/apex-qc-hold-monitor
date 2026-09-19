@@ -12,13 +12,13 @@ let currentHoldId = null;
 // https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js
 
 const firebaseConfig = {
-  apiKey: "AIzaSyBVdV7BKtw1lBexUBSM90l2gRmg2vNE7RY",
-  authDomain: "apex-production-report-90e12.firebaseapp.com",
-  databaseURL: "https://apex-production-report-90e12-default-rtdb.asia-southeast1.firebasedatabase.app",
-  projectId: "apex-production-report-90e12",
-  storageBucket: "apex-production-report-90e12.firebasestorage.app",
-  messagingSenderId: "857344599590",
-  appId: "1:857344599590:web:d002e55d68d896afe0e8e7"
+  apiKey: "AIzaSyBZC1ln8lQxkq_JJBHpMtF8zy850T3rHcg",
+  authDomain: "apex-qc-hold-monitor.firebaseapp.com",
+  databaseURL: "https://apex-qc-hold-monitor-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "apex-qc-hold-monitor",
+  storageBucket: "apex-qc-hold-monitor.firebasestorage.app",
+  messagingSenderId: "1006270751442",
+  appId: "1:1006270751442:web:dca6ce7f3b3a235ee9030b"
 };
 
 // Initialize Firebase if not already initialized
