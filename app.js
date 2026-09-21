@@ -1,6 +1,7 @@
 /* =========================================================
    APEX QC HOLD ROLL MONITOR
    COMPLETE APPLICATION JAVASCRIPT
+   STABLE / MANUAL-REFRESH VERSION
    INCLUDING SEND REMINDER
 ========================================================= */
 
@@ -19,7 +20,7 @@ import {
     push,
     set,
     update,
-    onValue
+    get
 } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-database.js";
 
 
@@ -69,10 +70,8 @@ const db =
 const CLOUDINARY_CLOUD_NAME =
     "org593vv";
 
-
 const CLOUDINARY_UPLOAD_PRESET =
     "apex_qc_hold";
-
 
 const CLOUDINARY_UPLOAD_URL =
     `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`;
@@ -87,102 +86,85 @@ const addHoldBtn =
         "addHoldBtn"
     );
 
-
 const addHoldModal =
     document.getElementById(
         "addHoldModal"
     );
-
 
 const closeAddHold =
     document.getElementById(
         "closeAddHold"
     );
 
-
 const cancelHold =
     document.getElementById(
         "cancelHold"
     );
-
 
 const holdForm =
     document.getElementById(
         "holdForm"
     );
 
-
 const detailsModal =
     document.getElementById(
         "detailsModal"
     );
-
 
 const closeDetails =
     document.getElementById(
         "closeDetails"
     );
 
-
 const detailsContent =
     document.getElementById(
         "detailsContent"
     );
-
 
 const holdList =
     document.getElementById(
         "holdList"
     );
 
-
 const historyList =
     document.getElementById(
         "historyList"
     );
-
 
 const searchInput =
     document.getElementById(
         "searchInput"
     );
 
-
 const processFilter =
     document.getElementById(
         "processFilter"
     );
-
 
 const statusFilter =
     document.getElementById(
         "statusFilter"
     );
 
-
 const reasonFilter =
     document.getElementById(
         "reasonFilter"
     );
-
 
 const labelPhoto =
     document.getElementById(
         "labelPhoto"
     );
 
-
 const photoPreview =
     document.getElementById(
         "photoPreview"
     );
 
-
 const uploadProgress =
     document.getElementById(
         "uploadProgress"
     );
-
 
 const saveHoldBtn =
     document.getElementById(
@@ -199,30 +181,25 @@ const activeHoldsEl =
         "activeHolds"
     );
 
-
 const actionRequiredEl =
     document.getElementById(
         "actionRequired"
     );
-
 
 const over24El =
     document.getElementById(
         "over24"
     );
 
-
 const over48El =
     document.getElementById(
         "over48"
     );
 
-
 const releasedEl =
     document.getElementById(
         "released"
     );
-
 
 const totalWeightEl =
     document.getElementById(
@@ -1041,17 +1018,11 @@ function createAction(
 ========================================================= */
 
 async function updateHoldWithAction(
-
     holdId,
-
     action,
-
     person,
-
     remarks,
-
     changes = {}
-
 ) {
 
     const actionRef =
@@ -1245,7 +1216,9 @@ async function createHold(
         labelPhoto.files?.[0];
 
 
-    /* VALIDATION */
+    /* =====================================================
+       VALIDATION
+    ====================================================== */
 
     if (!jobNo) {
 
@@ -1793,10 +1766,15 @@ window.sendReminder =
 
 
         body +=
-            "Please take the necessary action on this QC hold roll.\n\n"+
+            "Please take the necessary action on this QC hold roll.\n\n";
 
-`Open APEX QC Hold Monitor Dashboard:\n` +
-`https://dd1432.github.io/apex-qc-hold-monitor/\n\n`;
+
+        body +=
+            "Open APEX QC Hold Monitor Dashboard:\n";
+
+
+        body +=
+            "https://dd1432.github.io/apex-qc-hold-monitor/\n\n";
 
 
         body +=
@@ -3055,7 +3033,6 @@ function detailHtml(
 function renderActionPanel(
     hold
 ) {
-
 
     /* =====================================================
        INSPECTION
@@ -4589,6 +4566,9 @@ function updateSummary() {
 
 /* =========================================================
    RENDER ALL
+   IMPORTANT:
+   This function ONLY renders dashboard lists/summary.
+   It NEVER rebuilds the Details Modal.
 ========================================================= */
 
 function renderAll() {
@@ -4598,24 +4578,6 @@ function renderAll() {
     renderActiveHolds();
 
     renderHistory();
-
-
-    if (
-
-        currentHoldId &&
-
-        holds[currentHoldId] &&
-
-        !detailsModal.classList.contains(
-            "hidden"
-        )
-
-    ) {
-
-        renderDetailsModal(
-            holds[currentHoldId]
-        );
-    }
 }
 
 
@@ -4682,9 +4644,10 @@ function switchTab(
 
 /* =========================================================
    LOAD HOLDS
+   ONE-TIME FIREBASE READ ONLY
 ========================================================= */
 
-function loadHolds() {
+async function loadHolds() {
 
     const holdsRef =
         ref(
@@ -4693,46 +4656,45 @@ function loadHolds() {
         );
 
 
-    onValue(
+    try {
 
-        holdsRef,
-
-        snapshot => {
-
-            holds =
-                snapshot.val() ||
-                {};
-
-
-            renderAll();
-
-        },
-
-        error => {
-
-            console.error(
-                "Firebase read error:",
-                error
+        const snapshot =
+            await get(
+                holdsRef
             );
 
 
-            holdList.innerHTML = `
+        holds =
+            snapshot.val() ||
+            {};
 
-                <div class="empty-state">
 
-                    Unable to load QC hold data.
+        renderAll();
 
-                    <br><br>
 
-                    Check Firebase configuration
-                    and database rules.
+    } catch (error) {
 
-                </div>
+        console.error(
+            "Firebase read error:",
+            error
+        );
 
-            `;
-        }
 
-    );
+        holdList.innerHTML = `
+
+            <div class="empty-state">
+
+                Unable to load QC hold data.
+
+                <br><br>
+
+                Check Firebase configuration
+                and database rules.
+
+            </div>
+
+        `;
+    }
 }
 
 
@@ -4745,24 +4707,20 @@ addHoldBtn.addEventListener(
     openAddHoldModal
 );
 
-
 closeAddHold.addEventListener(
     "click",
     closeAddHoldModal
 );
-
 
 cancelHold.addEventListener(
     "click",
     closeAddHoldModal
 );
 
-
 closeDetails.addEventListener(
     "click",
     closeDetailsModal
 );
-
 
 holdForm.addEventListener(
     "submit",
@@ -4931,56 +4889,24 @@ document.addEventListener(
 
 
 /* =========================================================
-   LIVE AGE REFRESH
+   NO AUTOMATIC REFRESH
+=========================================================
+
+   IMPORTANT:
+
+   There is intentionally NO setInterval()
+   here.
+
+   There is intentionally NO onValue()
+   Firebase listener.
+
+   Firebase data is loaded once when the
+   page opens.
+
+   To get the latest database data, simply
+   refresh the browser page manually.
+
 ========================================================= */
-
-setInterval(
-
-    () => {
-
-        updateSummary();
-
-
-        if (
-            currentTab ===
-            "active"
-        ) {
-
-            renderActiveHolds();
-        }
-
-
-        if (
-            currentTab ===
-            "history"
-        ) {
-
-            renderHistory();
-        }
-
-
-        if (
-
-            currentHoldId &&
-
-            !detailsModal.classList.contains(
-                "hidden"
-            ) &&
-
-            holds[currentHoldId]
-
-        ) {
-
-            renderDetailsModal(
-                holds[currentHoldId]
-            );
-        }
-
-    },
-
-    60000
-
-);
 
 
 /* =========================================================
@@ -4991,7 +4917,6 @@ loadHolds();
 
 renderAll();
 
-
 console.log(
-    "APEX QC HOLD ROLL MONITOR loaded successfully."
+    "APEX QC HOLD ROLL MONITOR loaded successfully - MANUAL REFRESH MODE."
 );
